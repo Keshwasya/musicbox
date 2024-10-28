@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 
@@ -5,6 +6,7 @@ const app = express();
 const PORT = 3001;
 
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
 // API endpoint to fetch a message 
 //NOTE: create a routes or controllers directory to handle all the endpoints/routes 
@@ -16,6 +18,11 @@ app.get('/', (req, res) => {
   res.json('Hello, World! Welcome to the Music Album API!'); // Response sent back to the frontend
   //res.sendFile(path.join(__dirname, 'frontend', 'public', 'index.html'));
 });
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+});
+
 
 // Starts the server
 app.listen(PORT, () => {
