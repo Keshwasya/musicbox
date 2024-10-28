@@ -18,6 +18,7 @@ function App() {
   };
 
   return (
+    //NOTE: Move this into it's own js folder for index.html js
     <div className="App">
       <h1>Music Album Review Site</h1>
       <button onClick={fetchData}>Fetch Message</button>
