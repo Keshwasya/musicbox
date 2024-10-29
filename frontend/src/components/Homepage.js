@@ -1,46 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAccessToken } from '../utils/spotifyAuth';
 
 function Homepage() {
-  const [message, setMessage] = useState('');
+  const [album, setAlbum] = useState(null);
   const [fetchStatus, setFetchStatus] = useState('');
 
-  const fetchData = async () => {
-    setFetchStatus('Fetching...');
+  const fetchAlbumData = async (albumId) => {
+    setFetchStatus('Fetching album...');
+    const token = await getAccessToken();
     try {
-      const response = await axios.get('http://localhost:3001');
-      setMessage(response.data);
-      setFetchStatus('Message fetched successfully!');
+      const response = await fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setAlbum(data);
+      setFetchStatus('Album fetched successfully!');
     } catch (error) {
-      console.error("Error fetching data:", error);
-      setFetchStatus('Error fetching message.');
-    }
-  };
-
-  const fetchAlbumData = async (albumName) => {
-    setFetchStatus('Fetching album data...');
-    try {
-      const response = await axios.get(
-        `https://ws.audioscrobbler.com/2.0/?method=album.search&album=${albumName}&api_key=834e7e36c22ff83a05ebd995dbeed7a2&format=json`
-      );
-      setMessage(JSON.stringify(response.data.results));
-      setFetchStatus('Album data fetched successfully!');
-    } catch (error) {
-      console.error("Error fetching album data:", error);
-      setFetchStatus('Error fetching album data.');
+      console.error("Error fetching album:", error);
+      setFetchStatus('Error fetching album.');
     }
   };
 
   useEffect(() => {
-    fetchAlbumData('Flower Boy'); // Replace with any album name you'd like to load by default
+    fetchAlbumData('4aawyAB9vmqN3uQ7FjRGTy'); // example album ID
   }, []);
 
   return (
     <div className="App">
       <h1>Music Album Review Site</h1>
-      <button onClick={fetchData}>Fetch Message</button>
       <p>{fetchStatus}</p>
-      <p>{message}</p>
+      {album && (
+        <div>
+          <h2>{album.name}</h2>
+          <img src={album.images[0]?.url} alt={album.name} width="200" />
+        </div>
+      )}
     </div>
   );
 }
