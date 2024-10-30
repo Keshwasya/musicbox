@@ -1,41 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { getAccessToken } from '../utils/spotifyAuth';
 
 function Homepage() {
-  const [album, setAlbum] = useState(null);
+  const [albums, setAlbums] = useState([]);
+  const [artists, setArtists] = useState([]);
   const [fetchStatus, setFetchStatus] = useState('');
 
-  const fetchAlbumData = async (albumId) => {
-    setFetchStatus('Fetching album...');
+  // Function to fetch popular albums (new releases)
+  const fetchPopularAlbums = async () => {
+    setFetchStatus('Fetching popular albums...');
     const token = await getAccessToken();
     try {
-      const response = await fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+      const response = await fetch(`https://api.spotify.com/v1/browse/new-releases?limit=10`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
-      setAlbum(data);
-      setFetchStatus('Album fetched successfully!');
+      setAlbums(data.albums.items);
+      setFetchStatus('Popular albums fetched successfully!');
     } catch (error) {
-      console.error("Error fetching album:", error);
-      setFetchStatus('Error fetching album.');
+      console.error("Error fetching popular albums:", error);
+      setFetchStatus('Error fetching popular albums.');
     }
   };
 
+  // Function to fetch top artists by genre (e.g., pop)
+  const fetchTopArtistsByGenre = async (genre) => {
+    setFetchStatus('Fetching top artists...');
+    const token = await getAccessToken();
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${genre}&type=artist&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setArtists(data.artists.items);
+      setFetchStatus('Top artists fetched successfully!');
+    } catch (error) {
+      console.error("Error fetching top artists:", error);
+      setFetchStatus('Error fetching top artists.');
+    }
+  };
+
+  // Fetch both popular albums and artists on component mount
   useEffect(() => {
-    fetchAlbumData('4aawyAB9vmqN3uQ7FjRGTy'); // example album ID
+    fetchPopularAlbums();
+    fetchTopArtistsByGenre("pop"); // Replace "pop" with any genre you prefer
   }, []);
 
   return (
     <div className="App">
       <h1>Music Album Review Site</h1>
       <p>{fetchStatus}</p>
-      {album && (
-        <div>
-          <h2>{album.name}</h2>
-          <img src={album.images[0]?.url} alt={album.name} width="200" />
-        </div>
-      )}
+
+      <h2>Top Albums</h2>
+      <ul>
+        {albums.map(album => (
+          <li key={album.id}>
+            {album.name} by {album.artists[0].name}
+            <img src={album.images[0]?.url} alt={album.name} width="100" />
+          </li>
+        ))}
+      </ul>
+
+      <h2>Top Artists</h2>
+      <ul>
+        {artists.map(artist => (
+          <li key={artist.id}>
+            {artist.name}
+            <img src={artist.images[0]?.url} alt={artist.name} width="100" />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
