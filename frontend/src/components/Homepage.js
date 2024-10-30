@@ -4,10 +4,8 @@ import { getAccessToken } from '../utils/spotifyAuth';
 function Homepage() {
   const [albums, setAlbums] = useState([]);
   const [artists, setArtists] = useState([]);
-  const [fetchStatus, setFetchStatus] = useState('');
 
   const fetchPopularAlbums = async () => {
-    setFetchStatus('Fetching popular albums...');
     const token = await getAccessToken();
     try {
       const response = await fetch(`https://api.spotify.com/v1/browse/new-releases?limit=10`, {
@@ -15,15 +13,12 @@ function Homepage() {
       });
       const data = await response.json();
       setAlbums(data.albums.items);
-      setFetchStatus('');
     } catch (error) {
       console.error("Error fetching popular albums:", error);
-      setFetchStatus('Error fetching popular albums.');
     }
   };
 
   const fetchTopArtistsByGenre = async (genre) => {
-    setFetchStatus('Fetching top artists...');
     const token = await getAccessToken();
     try {
       const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${genre}&type=artist&limit=10`, {
@@ -31,10 +26,8 @@ function Homepage() {
       });
       const data = await response.json();
       setArtists(data.artists.items);
-      setFetchStatus('');
     } catch (error) {
       console.error("Error fetching top artists:", error);
-      setFetchStatus('Error fetching top artists.');
     }
   };
 
@@ -43,26 +36,51 @@ function Homepage() {
     fetchTopArtistsByGenre("pop");
   }, []);
 
+  const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
+    event.preventDefault();
+    let appOpened = false;
+  
+    // Attempt to open the Spotify app using an invisible iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = spotifyUri;
+    document.body.appendChild(iframe);
+  
+    // Set the appOpened flag to true after a short delay if the app is launched successfully
+    setTimeout(() => {
+      appOpened = true;
+      document.body.removeChild(iframe);
+    }, 1000);
+  
+    // Fallback to the web URL if the app hasn't opened
+    setTimeout(() => {
+      if (!appOpened) {
+        window.open(webUrl, '_blank');
+      }
+    }, 1500); // Slightly longer delay for the web fallback
+  };
+  
+  
+
   return (
     <div className="container my-5">
       {/* Top Albums Section */}
-      <h2 className="mt-5">Top Albums</h2>
+      <h2 className="mt-5">Top 10 Pop Albums</h2>
       <div className="scroll-container">
         {albums.map(album => (
-          <a
+          <button
             key={album.id}
-            href={`https://open.spotify.com/album/${album.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
             className="card album-card"
-            style={{ textDecoration: 'none', color: 'inherit' }} // Ensures link styling doesn’t affect the card appearance
+            style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <img src={album.images[0]?.url} className="card-img-top" alt={album.name} />
             <div className="card-body">
               <h5 className="card-title">{album.name}</h5>
               <p className="card-text">By {album.artists[0].name}</p>
             </div>
-          </a>
+          </button>
         ))}
       </div>
 
@@ -70,19 +88,18 @@ function Homepage() {
       <h2 className="mt-5">Top Artists</h2>
       <div className="scroll-container">
         {artists.map(artist => (
-          <a
+          <button
             key={artist.id}
-            href={`https://open.spotify.com/artist/${artist.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            onClick={openSpotifyLink(`spotify:artist:${artist.id}`, `https://open.spotify.com/artist/${artist.id}`)}
             className="card artist-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}  // Ensures link styling doesn’t affect the card appearance
+            style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <img src={artist.images[0]?.url} className="card-img-top" alt={artist.name} />
             <div className="card-body">
               <h5 className="card-title">{artist.name}</h5>
             </div>
-          </a>
+          </button>
         ))}
       </div>
     </div>
