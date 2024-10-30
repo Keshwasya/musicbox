@@ -6,7 +6,6 @@ function Homepage() {
   const [artists, setArtists] = useState([]);
   const [fetchStatus, setFetchStatus] = useState('');
 
-  // Function to fetch popular albums (new releases)
   const fetchPopularAlbums = async () => {
     setFetchStatus('Fetching popular albums...');
     const token = await getAccessToken();
@@ -16,14 +15,13 @@ function Homepage() {
       });
       const data = await response.json();
       setAlbums(data.albums.items);
-      setFetchStatus('Popular albums fetched successfully!');
+      setFetchStatus('');
     } catch (error) {
       console.error("Error fetching popular albums:", error);
       setFetchStatus('Error fetching popular albums.');
     }
   };
 
-  // Function to fetch top artists by genre (e.g., pop)
   const fetchTopArtistsByGenre = async (genre) => {
     setFetchStatus('Fetching top artists...');
     const token = await getAccessToken();
@@ -33,43 +31,63 @@ function Homepage() {
       });
       const data = await response.json();
       setArtists(data.artists.items);
-      setFetchStatus('Top artists fetched successfully!');
+      setFetchStatus('');
     } catch (error) {
       console.error("Error fetching top artists:", error);
       setFetchStatus('Error fetching top artists.');
     }
   };
 
-  // Fetch both popular albums and artists on component mount
   useEffect(() => {
     fetchPopularAlbums();
-    fetchTopArtistsByGenre("pop"); // Replace "pop" with any genre you prefer
+    fetchTopArtistsByGenre("pop");
   }, []);
 
   return (
-    <div className="App">
-      <h1>Music Album Review Site</h1>
-      <p>{fetchStatus}</p>
+    <div className="container my-5">
+      <h1 className="text-center mb-4">Musicbox</h1>
+      {fetchStatus && <p className="text-center text-muted">{fetchStatus}</p>}
 
-      <h2>Top Albums</h2>
-      <ul>
+      {/* Top Albums Section */}
+      <h2 className="mt-5">Top Albums</h2>
+      <div className="scroll-container">
         {albums.map(album => (
-          <li key={album.id}>
-            {album.name} by {album.artists[0].name}
-            <img src={album.images[0]?.url} alt={album.name} width="100" />
-          </li>
+          <a
+            key={album.id}
+            href={`https://open.spotify.com/album/${album.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card album-card"
+            style={{ textDecoration: 'none', color: 'inherit' }} // Ensures link styling doesn’t affect the card appearance
+          >
+            <img src={album.images[0]?.url} className="card-img-top" alt={album.name} />
+            <div className="card-body">
+              <h5 className="card-title">{album.name}</h5>
+              <p className="card-text">By {album.artists[0].name}</p>
+            </div>
+          </a>
         ))}
-      </ul>
+      </div>
 
-      <h2>Top Artists</h2>
-      <ul>
+      {/* Top Artists Section */}
+      <h2 className="mt-5">Top Artists</h2>
+      <div className="scroll-container">
         {artists.map(artist => (
-          <li key={artist.id}>
-            {artist.name}
-            <img src={artist.images[0]?.url} alt={artist.name} width="100" />
-          </li>
+          <a
+            key={artist.id}
+            href={`https://open.spotify.com/artist/${artist.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card artist-card"
+            style={{ textDecoration: 'none', color: 'inherit' }}  // Ensures link styling doesn’t affect the card appearance
+          >
+            <img src={artist.images[0]?.url} className="card-img-top" alt={artist.name} />
+            <div className="card-body">
+              <h5 className="card-title">{artist.name}</h5>
+            </div>
+          </a>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
