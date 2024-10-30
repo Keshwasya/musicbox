@@ -91,10 +91,33 @@
         background-color: #ccc;
         border-radius: 4px;
       }
+
+      .jumbotron {
+        margin-bottom: 1rem; /* Reduce the space below the banner */
+      }
+
+      .scroll-container {
+        margin-top: 1rem; /* Reduce the space above the Top Albums section */
+}
     </style>
     
   </head>
   <body>
+    <!-- Static Welcome Banner -->
+     
+    <div class="container text-center bg-light banner-container">
+      <h1 class="display-4">Welcome to Musicbox</h1>
+      <p class="lead">By Keshwasya Singh</p>
+      <hr class="my-2" />
+      <h5>Tech Stack:</h5>
+      <ul class="list-unstyled">
+        <li>Frontend: React, Bootstrap</li>
+        <li>Backend: Node.js, Express</li>
+        <li>Authentication: Spotify API</li>
+        <li>Deployment: (e.g., Heroku, Vercel)</li>
+      </ul>
+    </div>
+    
     <div id="root"></div>
 
     <!-- Bootstrap JS, Popper.js, and jQuery for interactive components -->

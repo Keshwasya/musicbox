@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.jumbotron {
+  margin-bottom: 1rem; /* Reduce the space below the banner */
+}
+
+.scroll-container {
+  margin-top: 1rem; /* Reduce the space above the Top Albums section */
+}

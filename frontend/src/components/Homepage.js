@@ -45,9 +45,6 @@ function Homepage() {
 
   return (
     <div className="container my-5">
-      <h1 className="text-center mb-4">Musicbox</h1>
-      {fetchStatus && <p className="text-center text-muted">{fetchStatus}</p>}
-
       {/* Top Albums Section */}
       <h2 className="mt-5">Top Albums</h2>
       <div className="scroll-container">
