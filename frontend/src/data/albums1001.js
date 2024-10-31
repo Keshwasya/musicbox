@@ -505,7 +505,7 @@ export const albums1001 = [
     },
     {
         id: 73,
-        artist: "John Mayall With Eric Clapton",
+        artist: "John Mayall & the Bluesbreakers",
         album: "Blues Breakers",
         year: "None",
         cover: "None"
@@ -694,7 +694,7 @@ export const albums1001 = [
     },
     {
         id: 100,
-        artist: "The Jimi Hendrix Experience",
+        artist: "Jimi Hendrix",
         album: "Are You Experienced?",
         year: "None",
         cover: "None"
@@ -729,7 +729,7 @@ export const albums1001 = [
     },
     {
         id: 105,
-        artist: "The Jimi Hendrix Experience",
+        artist: "Jimi Hendrix",
         album: "Axis: Bold as Love",
         year: "1967",
         cover: "None"
@@ -785,7 +785,7 @@ export const albums1001 = [
     },
     {
         id: 113,
-        artist: "The Jimi Hendrix Experience",
+        artist: "Jimi Hendrix",
         album: "Electric Ladyland",
         year: "1968",
         cover: "None"
@@ -1248,7 +1248,7 @@ export const albums1001 = [
     {
         id: 179,
         artist: "Black Sabbath",
-        album: "Black Sabbath",
+        album: "Black Sabbath (2014 Remaster)",
         year: "1970",
         cover: "None"
     },
@@ -1611,8 +1611,8 @@ export const albums1001 = [
     },
     {
         id: 231,
-        artist: "Pearl",
-        album: "Janis Joplin",
+        artist: "Janis Joplin",
+        album: "Pearl",
         year: "None",
         cover: "None"
     },
@@ -2711,7 +2711,7 @@ export const albums1001 = [
     {
         id: 388,
         artist: "Peter Gabriel",
-        album: "Peter Gabriel",
+        album: "Peter Gabriel 1: Car (Remastered)",
         year: "None",
         cover: "None"
     },
@@ -2900,7 +2900,7 @@ export const albums1001 = [
     {
         id: 415,
         artist: "Van Halen",
-        album: "Van Halen",
+        album: "Van Halen (Remastered)",
         year: "None",
         cover: "None"
     },
@@ -3208,7 +3208,7 @@ export const albums1001 = [
     {
         id: 459,
         artist: "Peter Gabriel",
-        album: "Peter Gabriel",
+        album: "Peter Gabriel 3: Melt (Remastered)",
         year: "1980",
         cover: "None"
     },
@@ -3705,7 +3705,7 @@ export const albums1001 = [
     {
         id: 530,
         artist: "Meat Puppets",
-        album: "Meat Puppets II",
+        album: "II",
         year: "None",
         cover: "None"
     },
@@ -4090,7 +4090,7 @@ export const albums1001 = [
     {
         id: 585,
         artist: "Peter Gabriel",
-        album: "So",
+        album: "So (special edition)",
         year: "None",
         cover: "None"
     },
@@ -4264,7 +4264,7 @@ export const albums1001 = [
     },
     {
         id: 610,
-        artist: "Terence Trent D'arby",
+        artist: "Sananda Maitreya",
         album: "Introducing the Hardline According to Terence Trent D'arby",
         year: "None",
         cover: "None"
@@ -4327,7 +4327,7 @@ export const albums1001 = [
     },
     {
         id: 619,
-        artist: "The Happy Mondays",
+        artist: "Happy Mondays",
         album: "Bummed",
         year: "None",
         cover: "None"
@@ -4593,8 +4593,8 @@ export const albums1001 = [
     },
     {
         id: 657,
-        artist: "Nick of Time",
-        album: "Bonnie Raitt",
+        artist: "Bonnie Raitt",
+        album: "Nick of Time",
         year: "1989",
         cover: "None"
     },
@@ -4621,7 +4621,7 @@ export const albums1001 = [
     },
     {
         id: 661,
-        artist: "Janet Jackson's",
+        artist: "Janet Jackson",
         album: "Rhythm Nation 1814",
         year: "None",
         cover: "None"
@@ -4825,7 +4825,7 @@ export const albums1001 = [
     {
         id: 690,
         artist: "MC Solar",
-        album: "Qui Seme Le Vent Recolte Le Tempo",
+        album: "Qui sème le vent récolte le tempo",
         year: "None",
         cover: "None"
     },
@@ -4867,7 +4867,7 @@ export const albums1001 = [
     {
         id: 696,
         artist: "Public Enemy",
-        album: "Apocalypse 91...The Enemy Strikes Back",
+        album: "Apocalypse 91... The Enemy Strikes Black",
         year: "None",
         cover: "None"
     },
@@ -5034,7 +5034,7 @@ export const albums1001 = [
     },
     {
         id: 720,
-        artist: "Bizarre Ride II the Pharcyde (The Pharcyde",
+        artist: "The Pharcyde",
         album: "Bizarre Ride II the Pharcyde",
         year: "1992",
         cover: "None"
@@ -5125,7 +5125,7 @@ export const albums1001 = [
     },
     {
         id: 733,
-        artist: "P.J. Harvey",
+        artist: "PJ Harvey",
         album: "Dry",
         year: "None",
         cover: "None"
@@ -5153,8 +5153,8 @@ export const albums1001 = [
     },
     {
         id: 737,
-        artist: "New Wave",
-        album: "The Auteurs",
+        artist: "The Auteurs",
+        album: "New Wave",
         year: "None",
         cover: "None"
     },
@@ -5209,7 +5209,7 @@ export const albums1001 = [
     },
     {
         id: 745,
-        artist: "P.J. Harvey",
+        artist: "PJ Harvey",
         album: "Rid of Me",
         year: "None",
         cover: "None"
@@ -6849,7 +6849,7 @@ export const albums1001 = [
         id: 979,
         artist: "Franz Ferdinand",
         album: "Franz Ferdinand",
-        year: "None",
+        year: "2004",
         cover: "None"
     },
     {
@@ -7086,7 +7086,7 @@ export const albums1001 = [
     {
         id: 1013,
         artist: "Joanna Newsom",
-        album: "Ys",
+        album: "YS",
         year: "None",
         cover: "None"
     },
