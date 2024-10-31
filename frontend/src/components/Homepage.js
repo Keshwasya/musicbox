@@ -236,7 +236,7 @@ function Homepage() {
         ))}
       </div>
 
-      <h2 className="mt-5">1001 Albums You Must Hear</h2>
+      <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
       <div className="scroll-container">
           {recommendedAlbums.map(album => (
               <button
