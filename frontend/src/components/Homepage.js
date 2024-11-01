@@ -133,30 +133,34 @@ function Homepage() {
   }, []);
 
 
-  // Function to open Spotify links in app or web
+  // Function to open Spotify links with preference for app, fallback to web
   const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
-    event.preventDefault();
-    let appOpened = false;
+  event.preventDefault();
 
-    // Attempt to open the Spotify app using an invisible iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = spotifyUri;
-    document.body.appendChild(iframe);
+  // Detect device platform
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-    // Set the appOpened flag to true after a short delay if the app is launched successfully
+  if (isAndroid) {
+    // Use Intent URL for Android to open Spotify app
+    window.location.href = `intent://${spotifyUri}#Intent;package=com.spotify.music;scheme=https;end;`;
+  } else if (isIOS) {
+    // Attempt to open Spotify app on iOS
+    window.location.href = spotifyUri;
     setTimeout(() => {
-      appOpened = true;
-      document.body.removeChild(iframe);
-    }, 1000);
-
-    // Fallback to the web URL if the app hasn't opened
+      // Fallback to web if Spotify app is not installed
+      window.location.href = webUrl;
+    }, 1500);
+  } else {
+    // For laptops/desktops or other devices, try opening app, fallback to web
+    window.open(spotifyUri, '_blank');
     setTimeout(() => {
-      if (!appOpened) {
-        window.open(webUrl, '_blank');
-      }
-    }, 1500); // Slightly longer delay for the web fallback
-  };
+      window.open(webUrl, '_blank'); // Opens in browser if app is not installed
+    }, 1500);
+  }
+};
+
 
   useEffect(() => {
     fetchNewAlbumReleases();
