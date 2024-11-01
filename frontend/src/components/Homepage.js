@@ -132,13 +132,6 @@ function Homepage() {
     setRecommendedAlbums(albumsWithDetails);
   }, []);
 
-
-
-  const openGoogle = () => {
-    window.location.href = 'https://google.com';
-  };
-
-
   useEffect(() => {
     fetchNewAlbumReleases();
     fetchTrendingArtists();
