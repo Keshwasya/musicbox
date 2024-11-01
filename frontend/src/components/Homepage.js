@@ -165,7 +165,7 @@ function Homepage() {
         setTimeout(() => {
           // Fallback to the web player if the app doesn’t open
           window.open(webUrl, '_blank');
-        }, 300);
+        }, 3000);
       } else {
         // For mobile, open the web link directly, which will redirect to the app if installed
         window.open(webUrl, '_blank');
