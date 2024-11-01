@@ -233,11 +233,11 @@ function Homepage() {
       <div className="scroll-container">
         {recommendedAlbums.map(album => (
           <button
-            key={album.id}
-            onClick={openSpotifyLink(`spotify:album:${album.id}`, album.spotifyLink)}
-            className="card album-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
+              key={album.id}
+              onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              className="card album-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
             {album.cover ? (
               <img src={album.cover} className="card-img-top" alt={album.album} />
             ) : (
