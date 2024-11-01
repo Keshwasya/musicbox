@@ -234,7 +234,7 @@ function Homepage() {
         {recommendedAlbums.map(album => (
           <button
             key={album.id}
-            onClick={() => window.open(album.spotifyLink, '_blank')}
+            onClick={openSpotifyLink(`spotify:album:${album.id}`, album.spotifyLink)}
             className="card album-card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
