@@ -133,6 +133,13 @@ function Homepage() {
   }, []);
 
 
+
+  const openGoogle = () => {
+    window.location.href = 'https://google.com';
+  };
+
+
+
   // Function to open Spotify links with preference for app, fallback to web
   const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
   event.preventDefault();
@@ -172,6 +179,13 @@ function Homepage() {
 
   return (
     <div className="container my-5">
+
+      {/* Temporary button to test external link */}
+      <button onClick={openGoogle} style={{ margin: '20px', padding: '10px', fontSize: '16px' }}>
+        Open Google
+      </button>
+
+    
       {/* Trending Artists Section */}
       <h2 className="mt-5">Trending Artists</h2>
       <div className="scroll-container">
