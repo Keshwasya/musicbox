@@ -179,12 +179,6 @@ function Homepage() {
 
   return (
     <div className="container my-5">
-
-      {/* Temporary button to test external link */}
-      <button onClick={openGoogle} style={{ margin: '20px', padding: '10px', fontSize: '16px' }}>
-        Open Google
-      </button>
-
     
       {/* Trending Artists Section */}
       <h2 className="mt-5">Trending Artists</h2>
@@ -192,7 +186,7 @@ function Homepage() {
         {trendingArtists.map(artist => (
           <button
             key={artist.id}
-            onClick={(e) => openSpotifyLink(`spotify:artist:${artist.id}`, `https://open.spotify.com/artist/${artist.id}`)(e)}
+            onClick={() => window.open(`https://open.spotify.com/artist/${artist.id}`, '_blank')}
             className="card artist-card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -214,7 +208,7 @@ function Homepage() {
         {trendingAlbums.map(({ album, imageUrl }) => (
           <button
             key={album.id}
-            onClick={(e) => openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)(e)}
+            onClick={() => window.open(`https://open.spotify.com/album/${album.id}`, '_blank')}
             className="card album-card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -231,13 +225,13 @@ function Homepage() {
         ))}
       </div>
 
-        {/* New Album Releases Section */}
-        <h2 className="mt-5">New Album Releases</h2>
+      {/* New Album Releases Section */}
+      <h2 className="mt-5">New Album Releases</h2>
       <div className="scroll-container">
         {newAlbumReleases.map(album => (
           <button
             key={album.id}
-            onClick={(e) => openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)(e)}
+            onClick={() => window.open(`https://open.spotify.com/album/${album.id}`, '_blank')}
             className="card album-card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -254,6 +248,7 @@ function Homepage() {
         ))}
       </div>
 
+      {/* 1001 Albums You Must Hear Before You Die Section */}
       <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
       <div className="scroll-container">
           {recommendedAlbums.map(album => (
@@ -279,5 +274,4 @@ function Homepage() {
     </div>
   );
 }
-
 export default Homepage;
