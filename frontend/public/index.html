@@ -68,6 +68,13 @@
         text-align: center;
       }
 
+      /* Apply additional spacing only for mobile screens */
+      @media (max-width: 768px) {
+        .album-card, .artist-card {
+          margin: 0 12px; /* Increase margin for mobile devices only */
+        }
+      }
+
       .album-card img, .artist-card img {
         width: 100%;
         height: 150px;
