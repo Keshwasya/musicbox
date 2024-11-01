@@ -139,36 +139,6 @@ function Homepage() {
   };
 
 
-
-  // Function to open Spotify links with preference for app, fallback to web
-  const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
-  event.preventDefault();
-
-  // Detect device platform
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isAndroid = /android/i.test(userAgent);
-  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
-
-  if (isAndroid) {
-    // Use Intent URL for Android to open Spotify app
-    window.location.href = `intent://${spotifyUri}#Intent;package=com.spotify.music;scheme=https;end;`;
-  } else if (isIOS) {
-    // Attempt to open Spotify app on iOS
-    window.location.href = spotifyUri;
-    setTimeout(() => {
-      // Fallback to web if Spotify app is not installed
-      window.location.href = webUrl;
-    }, 1500);
-  } else {
-    // For laptops/desktops or other devices, try opening app, fallback to web
-    window.open(spotifyUri, '_blank');
-    setTimeout(() => {
-      window.open(webUrl, '_blank'); // Opens in browser if app is not installed
-    }, 1500);
-  }
-};
-
-
   useEffect(() => {
     fetchNewAlbumReleases();
     fetchTrendingArtists();
@@ -176,102 +146,132 @@ function Homepage() {
     fetchRandomRecommendations("Black Sabbath (2014 Remaster)");
   }, [fetchRandomRecommendations]);
 
-
-  return (
-    <div className="container my-5">
-    
-      {/* Trending Artists Section */}
-      <h2 className="mt-5">Trending Artists</h2>
-      <div className="scroll-container">
-        {trendingArtists.map(artist => (
-          <button
-            key={artist.id}
-            onClick={() => window.open(`https://open.spotify.com/artist/${artist.id}`, '_blank')}
-            className="card artist-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {artist.images && artist.images[0] ? (
-              <img src={artist.images[0].url} className="card-img-top" alt={artist.name} />
-            ) : (
-              <div className="no-image-placeholder">No Image Available</div>
-            )}
-            <div className="card-body">
-              <h5 className="card-title">{artist.name}</h5>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Trending Albums Section */}
-      <h2 className="mt-5">Trending Albums</h2>
-      <div className="scroll-container">
-        {trendingAlbums.map(({ album, imageUrl }) => (
-          <button
-            key={album.id}
-            onClick={() => window.open(`https://open.spotify.com/album/${album.id}`, '_blank')}
-            className="card album-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {imageUrl ? (
-              <img src={imageUrl} className="card-img-top" alt={album.name} />
-            ) : (
-              <div className="no-image-placeholder">No Image Available</div>
-            )}
-            <div className="card-body">
-              <h5 className="card-title">{album.name}</h5>
-              <p className="card-text">By {album.artists[0].name}</p>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* New Album Releases Section */}
-      <h2 className="mt-5">New Album Releases</h2>
-      <div className="scroll-container">
-        {newAlbumReleases.map(album => (
-          <button
-            key={album.id}
-            onClick={() => window.open(`https://open.spotify.com/album/${album.id}`, '_blank')}
-            className="card album-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {album.images && album.images[0] ? (
-              <img src={album.images[0].url} className="card-img-top" alt={album.name} />
-            ) : (
-              <div className="no-image-placeholder">No Image Available</div>
-            )}
-            <div className="card-body">
-              <h5 className="card-title">{album.name}</h5>
-              <p className="card-text">By {album.artists[0].name}</p>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* 1001 Albums You Must Hear Before You Die Section */}
-      <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
-      <div className="scroll-container">
-          {recommendedAlbums.map(album => (
-              <button
-                  key={album.id}
-                  onClick={() => window.open(album.spotifyLink, '_blank')}
-                  className="card album-card"
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                  {album.cover ? (
-                      <img src={album.cover} className="card-img-top" alt={album.album} />
-                  ) : (
-                      <div className="no-image-placeholder">No Image Available</div>
-                  )}
-                  <div className="card-body">
-                      <h5 className="card-title">{album.album}</h5>
-                      <p className="card-text">By {album.artist}</p>
-                      <p className="card-text">Released: {album.year}</p>
-                  </div>
-              </button>
+    // Helper function to try to open the Spotify desktop app if available
+    const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
+      event.preventDefault();
+  
+      // Check if the platform is desktop
+      const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
+  
+      if (isDesktop) {
+        // Try to open the Spotify desktop app using the spotify: URI scheme
+        const appLink = document.createElement('a');
+        appLink.href = spotifyUri;
+        document.body.appendChild(appLink);
+        appLink.click();
+        document.body.removeChild(appLink);
+  
+        // Small delay to allow the app to open
+        setTimeout(() => {
+          // Fallback to the web player if the app doesn’t open
+          window.open(webUrl, '_blank');
+        }, 1500);
+      } else {
+        // For mobile, open the web link directly, which will redirect to the app if installed
+        window.open(webUrl, '_blank');
+      }
+    };
+  
+    return (
+      <div className="container my-5">
+  
+        {/* Trending Artists Section */}
+        <h2 className="mt-5">Trending Artists</h2>
+        <div className="scroll-container">
+          {trendingArtists.map(artist => (
+            <button
+              key={artist.id}
+              onClick={openSpotifyLink(`spotify:artist:${artist.id}`, `https://open.spotify.com/artist/${artist.id}`)}
+              className="card artist-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {/* Card Content */}
+              {artist.images && artist.images[0] ? (
+                <img src={artist.images[0].url} className="card-img-top" alt={artist.name} />
+              ) : (
+                <div className="no-image-placeholder">No Image Available</div>
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{artist.name}</h5>
+              </div>
+            </button>
           ))}
+        </div>
+  
+        {/* Trending Albums Section */}
+        <h2 className="mt-5">Trending Albums</h2>
+        <div className="scroll-container">
+          {trendingAlbums.map(({ album, imageUrl }) => (
+            <button
+              key={album.id}
+              onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              className="card album-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {/* Card Content */}
+              {imageUrl ? (
+                <img src={imageUrl} className="card-img-top" alt={album.name} />
+              ) : (
+                <div className="no-image-placeholder">No Image Available</div>
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{album.name}</h5>
+                <p className="card-text">By {album.artists[0].name}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+  
+        {/* New Album Releases Section */}
+        <h2 className="mt-5">New Album Releases</h2>
+        <div className="scroll-container">
+          {newAlbumReleases.map(album => (
+            <button
+              key={album.id}
+              onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              className="card album-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {/* Card Content */}
+              {album.images && album.images[0] ? (
+                <img src={album.images[0].url} className="card-img-top" alt={album.name} />
+              ) : (
+                <div className="no-image-placeholder">No Image Available</div>
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{album.name}</h5>
+                <p className="card-text">By {album.artists[0].name}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+  
+        {/* 1001 Albums Section */}
+        <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
+        <div className="scroll-container">
+          {albums1001.map(album => (
+            <button
+              key={album.id}
+              onClick={openSpotifyLink(album.spotifyLink, album.spotifyLink)}
+              className="card album-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {/* Card Content */}
+              {album.cover ? (
+                <img src={album.cover} className="card-img-top" alt={album.album} />
+              ) : (
+                <div className="no-image-placeholder">No Image Available</div>
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{album.album}</h5>
+                <p className="card-text">By {album.artist}</p>
+                <p className="card-text">Released: {album.year}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
-  );
-}
-export default Homepage;
+    );
+  }
+  
+  export default Homepage;
