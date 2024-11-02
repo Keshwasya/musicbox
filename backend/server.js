@@ -9,6 +9,11 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
+console.log("DB Username:", process.env.DB_USERNAME);
+console.log("DB Password:", process.env.DB_PASSWORD);
+console.log("DB Name:", process.env.DB_NAME);
+console.log("DB Host:", process.env.DB_HOST);
+
 // API endpoint to fetch a message 
 //NOTE: create a routes or controllers directory to handle all the endpoints/routes 
 // (like /albums, /reviews) but also handles CRUD operations 

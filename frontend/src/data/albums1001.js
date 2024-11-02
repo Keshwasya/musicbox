@@ -246,7 +246,7 @@ export const albums1001 = [
     },
     {
         id: 36,
-        artist: "Phil Spector",
+        artist: "Various Artists",
         album: "A Christmas Gift for You",
         year: "None",
         cover: "None"
@@ -470,7 +470,7 @@ export const albums1001 = [
     },
     {
         id: 68,
-        artist: "Paul Revere and the Raiders",
+        artist: "Paul Revere & the Raiders",
         album: "Midnight Ride",
         year: "1966",
         cover: "None"
@@ -638,8 +638,8 @@ export const albums1001 = [
     },
     {
         id: 92,
-        artist: "Francis Albert Sinatra & Antonio Carlos Jobim",
-        album: "Francis Albert Sinatra & Antonio Carlos Jobim",
+        artist: "Frank Sinatra, Antônio Carlos Jobim",
+        album: "Francis Albert Sinatra & Antonio Carlos Jobim (50th Anniversary Edition)",
         year: "1967",
         cover: "None"
     },
@@ -2080,8 +2080,8 @@ export const albums1001 = [
     },
     {
         id: 298,
-        artist: "Iggy and the Stooges",
-        album: "Raw Power",
+        artist: "The Stooges",
+        album: "Raw Power (50th Anniversary Legacy Edition)",
         year: "1973",
         cover: "None"
     },
@@ -3200,7 +3200,7 @@ export const albums1001 = [
     },
     {
         id: 458,
-        artist: "The Dead Kennedys",
+        artist: "Dead Kennedys",
         album: "Fresh Fruit for Rotting Vegetables",
         year: "1980",
         cover: "None"
@@ -4733,7 +4733,7 @@ export const albums1001 = [
     },
     {
         id: 677,
-        artist: "Neil Young and Crazy Horse",
+        artist: "Neil Young",
         album: "Ragged Glory",
         year: "None",
         cover: "None"
@@ -4951,7 +4951,7 @@ export const albums1001 = [
     {
         id: 708,
         artist: "Pavement",
-        album: "Slanted and Enchanted",
+        album: "Slanted & Enchanted",
         year: "None",
         cover: "None"
     },
@@ -6238,7 +6238,7 @@ export const albums1001 = [
     },
     {
         id: 892,
-        artist: "Les Digitales Rhymes",
+        artist: "Les Rythmes Digitales",
         album: "Darkdancer",
         year: "None",
         cover: "None"
@@ -6266,7 +6266,7 @@ export const albums1001 = [
     },
     {
         id: 896,
-        artist: "Bonnie 'Prince' Billy",
+        artist: "Will Oldham",
         album: "I See a Darkness",
         year: "None",
         cover: "None"
@@ -7155,8 +7155,8 @@ export const albums1001 = [
     },
     {
         id: 1023,
-        artist: "Only by the Night",
-        album: "Kings of Leon",
+        artist: "Kings of Leon",
+        album: "Only by the Night",
         year: "None",
         cover: "None"
     },

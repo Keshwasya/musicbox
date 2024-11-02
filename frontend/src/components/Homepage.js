@@ -23,7 +23,7 @@ function Homepage() {
     }
   };
 
-  // Fetch Trending Artists independently
+  // Fetch Trending Artists
   const fetchTrendingArtists = async () => {
     const token = await getAccessToken();
     try {
@@ -37,7 +37,7 @@ function Homepage() {
     }
   };
 
-  // Fetch Trending Albums via Curated Popular Playlists
+  // Fetch Trending Albums from Popular Playlists
   const fetchTrendingAlbums = async () => {
     const token = await getAccessToken();
     try {
@@ -75,84 +75,130 @@ function Homepage() {
     }
   };
 
-  // Fetch album details from Spotify for each album in 1001 Albums
   const fetchAlbumDetails = async (album) => {
     const token = await getAccessToken();
     try {
-      const response = await fetch(
-        `https://api.spotify.com/v1/search?q=album:${encodeURIComponent(album.album)}%20artist:${encodeURIComponent(album.artist)}&type=album&limit=1`,
+      // Primary search using both album and artist
+      const query = `album:${encodeURIComponent(album.album)} artist:${encodeURIComponent(album.artist)}`;
+      let response = await fetch(
+        `https://api.spotify.com/v1/search?q=${query}&type=album&limit=5`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const data = await response.json();
-      if (data.albums.items.length > 0) {
-        const spotifyAlbum = data.albums.items[0];
+    
+      let data = await response.json();
+    
+      // Filter to match both album and artist exactly
+      let spotifyAlbum = data.albums.items.find(
+        (item) =>
+          item.name.toLowerCase() === album.album.toLowerCase() &&
+          item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
+      );
+    
+      // Fallback search using only the album name if no result found
+      if (!spotifyAlbum) {
+        //console.log(`Album "${album.album}" by "${album.artist}" not found with full query. Trying album-only search.`);
+        response = await fetch(
+          `https://api.spotify.com/v1/search?q=album:${encodeURIComponent(album.album)}&type=album&limit=10`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        data = await response.json();
+  
+        // Filter results to find the correct album by matching the artist name
+        spotifyAlbum = data.albums.items.find(
+          (item) =>
+            item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
+        );
+      }
+    
+      if (spotifyAlbum) {
         const releaseDate = spotifyAlbum.release_date;
         const releaseYear = releaseDate ? releaseDate.split("-")[0] : null;
+        const spotifyUri = `spotify:album:${spotifyAlbum.id}`; // Desktop app link
+        const spotifyLink = spotifyAlbum.external_urls.spotify; // Browser link
+  
         return {
           id: album.id,
           artist: album.artist,
           album: album.album,
-          year: releaseYear, // Use Spotify-provided release year
+          year: releaseYear,
           cover: spotifyAlbum.images[0]?.url,
-          spotifyLink: spotifyAlbum.external_urls.spotify,
+          spotifyUri,
+          spotifyLink,
         };
+      } else {
+        //console.log(`Album "${album.album}" by "${album.artist}" not found in Spotify search results.`);
       }
     } catch (error) {
       console.error("Error fetching album details from Spotify:", error);
     }
-    return album; // Return original album data if Spotify cover isn't found
+    return album;
   };
+  
+  
+  
+  
+  
+  
+  
 
+  // // Fetch random recommendations from the 1001 Albums list
+  // const fetchRandomRecommendations = useCallback(async () => {
+  //   const shuffledAlbums = albums1001.sort(() => 0.5 - Math.random()).slice(0, 20);
+  //   const albumDetailsPromises = shuffledAlbums.map(album => fetchAlbumDetails(album));
+  //   const albumsWithDetails = await Promise.all(albumDetailsPromises);
+  //   setRecommendedAlbums(albumsWithDetails);
+  // }, []);
 
-// // Fetch random recommendations with `useCallback`
-// const fetchRandomRecommendations = useCallback(async () => {
-//   const shuffledAlbums = albums1001.sort(() => 0.5 - Math.random()).slice(0, 20);
-//   const albumDetailsPromises = shuffledAlbums.map(album => fetchAlbumDetails(album));
-//   const albumsWithDetails = await Promise.all(albumDetailsPromises);
-//   setRecommendedAlbums(albumsWithDetails);
-// }, []);
-
-  // Fetch random recommendations from the 1001 Albums list
   const fetchRandomRecommendations = useCallback(async () => {
-    const shuffledAlbums = albums1001.sort(() => 0.5 - Math.random()).slice(0, 20);
+    // Define the specific album name to include
+    const priorityAlbumName = "Midnight Ride";
+  
+    // Find the album by name
+    const priorityAlbum = albums1001.find(album => album.album === priorityAlbumName);
+  
+    // Shuffle the remaining albums and pick 19 other albums
+    let shuffledAlbums = albums1001.filter(album => album.album !== priorityAlbumName).sort(() => 0.5 - Math.random()).slice(0, 19);
+  
+    // Add the priority album if it exists
+    if (priorityAlbum) {
+      shuffledAlbums = [priorityAlbum, ...shuffledAlbums];
+    }
+  
     const albumDetailsPromises = shuffledAlbums.map(album => fetchAlbumDetails(album));
     const albumsWithDetails = await Promise.all(albumDetailsPromises);
     setRecommendedAlbums(albumsWithDetails);
   }, []);
 
+
+  const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
+    event.preventDefault();
+  
+    // Check if the platform is desktop
+    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
+  
+    if (isDesktop) {
+      // Attempt to open the desktop app using window.open with a longer delay for the fallback
+      const appWindow = window.open(spotifyUri, '_self');
+  
+      // Set a longer timeout for fallback to give the app time to open
+      setTimeout(() => {
+        if (document.hasFocus()) {
+          // Only open the web link if the user is still on the same page, indicating the app didn’t open
+          window.open(webUrl, '_blank');
+        }
+      }, 1500); // Extended delay to give the app time to open
+    } else {
+      // For mobile, open the web link directly
+      window.open(webUrl, '_blank');
+    }
+  };
+
   useEffect(() => {
     fetchNewAlbumReleases();
     fetchTrendingArtists();
     fetchTrendingAlbums();
-    //fetchRandomRecommendations("Black Sabbath (2014 Remaster)");
     fetchRandomRecommendations();
   }, [fetchRandomRecommendations]);
-
-    // Helper function to try to open the Spotify desktop app if available
-    const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
-      event.preventDefault();
-  
-      // Check if the platform is desktop
-      const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
-  
-      if (isDesktop) {
-        // Try to open the Spotify desktop app using the spotify: URI scheme
-        const appLink = document.createElement('a');
-        appLink.href = spotifyUri;
-        document.body.appendChild(appLink);
-        appLink.click();
-        document.body.removeChild(appLink);
-  
-        // Small delay to allow the app to open
-        setTimeout(() => {
-          // Fallback to the web player if the app doesn’t open
-          //window.open(webUrl, '_blank');
-        }, 3000);
-      } else {
-        // For mobile, open the web link directly, which will redirect to the app if installed
-        window.open(webUrl, '_blank');
-      }
-    };
   
     return (
       <div className="container my-5">
@@ -234,7 +280,7 @@ function Homepage() {
         {recommendedAlbums.map(album => (
           <button
             key={album.id}
-            onClick={() => window.open(album.spotifyLink, '_blank')}
+            onClick={openSpotifyLink(album.spotifyUri, album.spotifyLink)}
             className="card album-card"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
