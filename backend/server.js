@@ -2,36 +2,33 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const authRoutes = require('./routes/authRoutes'); // Import authentication routes
+const userRoutes = require('./routes/userRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 const PORT = 3001;
 
 app.use(cors());
+app.use(express.json()); // Middleware to parse JSON
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
-console.log("DB Username:", process.env.DB_USERNAME);
-console.log("DB Password:", process.env.DB_PASSWORD);
-console.log("DB Name:", process.env.DB_NAME);
-console.log("DB Host:", process.env.DB_HOST);
+// routes
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+app.use('/reviews', reviewRoutes);
 
-// API endpoint to fetch a message 
-//NOTE: create a routes or controllers directory to handle all the endpoints/routes 
-// (like /albums, /reviews) but also handles CRUD operations 
-// (Create, Read, Update, Delete) related to albums, users, or reviews.
-
-app.get('/', (req, res) => {
-  console.log('Fetch message request received!!!!!!'); // Log message to backend console
-  res.json('Hello, World! Welcome to the Music Album API!'); // Response sent back to the frontend
-  //res.sendFile(path.join(__dirname, 'frontend', 'public', 'index.html'));
-});
-
-//catch all
+// Catch all other routes and serve the frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+  // Serve index.html only for non-API routes
+  if (!req.path.startsWith('/auth') && !req.path.startsWith('/users')) {
+    res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+  } else {
+    res.status(404).send('API route not found');
+  }
 });
 
-
-// Starts the server
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

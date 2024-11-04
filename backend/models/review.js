@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Review.init({
     userId: DataTypes.INTEGER,
-    albumId: DataTypes.INTEGER,
+    albumId: DataTypes.STRING,
     content: DataTypes.TEXT,
     rating: DataTypes.FLOAT
   }, {
