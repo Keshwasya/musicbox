@@ -1,42 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Routes from './router/Routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  return <Routes />;
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Check if user is already logged in by verifying token and user data in local storage
+    const token = localStorage.getItem('token');
+    let userData = localStorage.getItem('user');
+
+    console.log("Raw user data from localStorage:", userData); // Log raw user data for debugging
+
+    // Only proceed if userData is a valid JSON string
+    if (token && userData && userData !== "undefined") {
+      try {
+        const parsedUserData = JSON.parse(userData);
+        setUser(parsedUserData);
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
+        // If parsing fails, clear the invalid user data from localStorage
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
+
+  const handleLogin = (userData, token) => {
+    console.log("User data received on login:", userData); // Log user data
+    setUser(userData);
+    localStorage.setItem('token', token); // Save token for session persistence
+    localStorage.setItem('user', JSON.stringify(userData)); // Save user info for display
+  };
+  
+  
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
+
+  return <Routes user={user} onLogin={handleLogin} onLogout={handleLogout} />;
 }
 
 export default App;
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// function App() {
-//   const [message, setMessage] = useState('');
-//   const [fetchStatus, setFetchStatus] = useState('');
-
-//   const fetchData = async () => {
-//     setFetchStatus('Fetching...'); // Set fetch status before making the request
-//     try {
-//       const response = await axios.get('http://localhost:3001'); // Ensure this URL matches your backend
-//       setMessage(response.data); // Set the message from the response
-//       setFetchStatus('Message fetched successfully!'); // Update status on success
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//       setFetchStatus('Error fetching message.'); // Update status on error
-//     }
-//   };
-
-//   return (
-//     //NOTE: Move this into it's own js folder for index.html js
-//     <div className="App">
-//       <h1>Music Album Review Site</h1>
-//       <button onClick={fetchData}>Fetch Message</button>
-//       <p>{fetchStatus}</p> {/* Display fetch status */}
-//       <p>{message}</p> {/* Display the fetched message */}
-//     </div>
-//   );
-// }
-
-// export default App;

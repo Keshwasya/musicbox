@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAccessToken } from '../utils/spotifyAuth';
-import { albums1001 } from '../data/albums1001'; // static data file
+import { albums1001 } from '../data/albums1001';
+import Navbar from './Navbar';
+import AuthModal from './AuthModal';
 
-
-function Homepage() {
+function Homepage({ user, onLogin, onLogout }) {
   const [newAlbumReleases, setNewAlbumReleases] = useState([]);
   const [trendingArtists, setTrendingArtists] = useState([]);
   const [trendingAlbums, setTrendingAlbums] = useState([]);
   const [recommendedAlbums, setRecommendedAlbums] = useState([]);
+  const [modalType, setModalType] = useState(null); // Track modal type (login/register)
+
+  const openModal = (type) => setModalType(type);
+  const closeModal = () => setModalType(null);
 
   // Fetch New Album Releases
   const fetchNewAlbumReleases = async () => {
@@ -42,7 +47,7 @@ function Homepage() {
     const token = await getAccessToken();
     try {
       const response = await fetch(`https://api.spotify.com/v1/browse/featured-playlists?country=US&limit=5`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
 
@@ -61,15 +66,13 @@ function Homepage() {
       const albumDataArrays = await Promise.all(playlistAlbumPromises);
       const allAlbums = albumDataArrays.flat();
 
-      // Extract unique albums
       const uniqueAlbums = [];
       allAlbums.forEach(({ album, imageUrl }) => {
         if (album && !uniqueAlbums.some(a => a.album.id === album.id)) {
           uniqueAlbums.push({ album, imageUrl });
         }
       });
-      setTrendingAlbums(uniqueAlbums.slice(0, 20)); // Limit to 20 unique albums
-
+      setTrendingAlbums(uniqueAlbums.slice(0, 20));
     } catch (error) {
       console.error("Error fetching trending albums:", error);
     }
@@ -78,7 +81,6 @@ function Homepage() {
   const fetchAlbumDetails = async (album) => {
     const token = await getAccessToken();
     try {
-      // Primary search using both album and artist
       const query = `album:${encodeURIComponent(album.album)} artist:${encodeURIComponent(album.artist)}`;
       let response = await fetch(
         `https://api.spotify.com/v1/search?q=${query}&type=album&limit=5`,
@@ -87,23 +89,19 @@ function Homepage() {
     
       let data = await response.json();
     
-      // Filter to match both album and artist exactly
       let spotifyAlbum = data.albums.items.find(
         (item) =>
           item.name.toLowerCase() === album.album.toLowerCase() &&
           item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
       );
     
-      // Fallback search using only the album name if no result found
       if (!spotifyAlbum) {
-        //console.log(`Album "${album.album}" by "${album.artist}" not found with full query. Trying album-only search.`);
         response = await fetch(
           `https://api.spotify.com/v1/search?q=album:${encodeURIComponent(album.album)}&type=album&limit=10`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         data = await response.json();
   
-        // Filter results to find the correct album by matching the artist name
         spotifyAlbum = data.albums.items.find(
           (item) =>
             item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
@@ -113,8 +111,8 @@ function Homepage() {
       if (spotifyAlbum) {
         const releaseDate = spotifyAlbum.release_date;
         const releaseYear = releaseDate ? releaseDate.split("-")[0] : null;
-        const spotifyUri = `spotify:album:${spotifyAlbum.id}`; // Desktop app link
-        const spotifyLink = spotifyAlbum.external_urls.spotify; // Browser link
+        const spotifyUri = `spotify:album:${spotifyAlbum.id}`;
+        const spotifyLink = spotifyAlbum.external_urls.spotify;
   
         return {
           id: album.id,
@@ -125,41 +123,18 @@ function Homepage() {
           spotifyUri,
           spotifyLink,
         };
-      } else {
-        //console.log(`Album "${album.album}" by "${album.artist}" not found in Spotify search results.`);
       }
     } catch (error) {
       console.error("Error fetching album details from Spotify:", error);
     }
     return album;
   };
-  
-  
-  
-  
-  
-  
-  
-
-  // // Fetch random recommendations from the 1001 Albums list
-  // const fetchRandomRecommendations = useCallback(async () => {
-  //   const shuffledAlbums = albums1001.sort(() => 0.5 - Math.random()).slice(0, 20);
-  //   const albumDetailsPromises = shuffledAlbums.map(album => fetchAlbumDetails(album));
-  //   const albumsWithDetails = await Promise.all(albumDetailsPromises);
-  //   setRecommendedAlbums(albumsWithDetails);
-  // }, []);
 
   const fetchRandomRecommendations = useCallback(async () => {
-    // Define the specific album name to include
     const priorityAlbumName = "Midnight Ride";
-  
-    // Find the album by name
     const priorityAlbum = albums1001.find(album => album.album === priorityAlbumName);
-  
-    // Shuffle the remaining albums and pick 19 other albums
     let shuffledAlbums = albums1001.filter(album => album.album !== priorityAlbumName).sort(() => 0.5 - Math.random()).slice(0, 19);
   
-    // Add the priority album if it exists
     if (priorityAlbum) {
       shuffledAlbums = [priorityAlbum, ...shuffledAlbums];
     }
@@ -169,26 +144,19 @@ function Homepage() {
     setRecommendedAlbums(albumsWithDetails);
   }, []);
 
-
   const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
     event.preventDefault();
   
-    // Check if the platform is desktop
     const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
   
     if (isDesktop) {
-      // Attempt to open the desktop app using window.open with a longer delay for the fallback
       const appWindow = window.open(spotifyUri, '_self');
-  
-      // Set a longer timeout for fallback to give the app time to open
       setTimeout(() => {
         if (document.hasFocus()) {
-          // Only open the web link if the user is still on the same page, indicating the app didn’t open
           window.open(webUrl, '_blank');
         }
-      }, 1500); // Extended delay to give the app time to open
+      }, 1500);
     } else {
-      // For mobile, open the web link directly
       window.open(webUrl, '_blank');
     }
   };
@@ -199,11 +167,30 @@ function Homepage() {
     fetchTrendingAlbums();
     fetchRandomRecommendations();
   }, [fetchRandomRecommendations]);
-  
-    return (
+
+  return (
+    <div>
+      {/* Navbar at the top */}
+      <Navbar user={user} onLogin={openModal} onLogout={onLogout} />
+      
+      {/* Auth Modal */}
+      {modalType && <AuthModal type={modalType} onClose={closeModal} onLogin={onLogin} />}
+
+      {/* Banner content */}
+      <div className="container text-center banner-container my-4">
+        <h1 className="display-4">Welcome to Musicbox</h1>
+        <p className="lead">By Keshwasya Singh</p>
+        <hr className="my-2" />
+        <h5>Tech Stack:</h5>
+        <ul className="list-unstyled">
+          <li>Frontend: React, Bootstrap</li>
+          <li>Backend: Node.js, Express</li>
+          <li>Authentication: Spotify API</li>
+          <li>Deployment: Vercel (Frontend) and Render (Backend)</li>
+        </ul>
+      </div>
+      
       <div className="container my-5">
-  
-        {/* Trending Artists Section */}
         <h2 className="mt-5">Trending Artists</h2>
         <div className="scroll-container">
           {trendingArtists.map(artist => (
@@ -213,7 +200,6 @@ function Homepage() {
               className="card artist-card"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {/* Card Content */}
               {artist.images && artist.images[0] ? (
                 <img src={artist.images[0].url} className="card-img-top" alt={artist.name} />
               ) : (
@@ -225,8 +211,7 @@ function Homepage() {
             </button>
           ))}
         </div>
-  
-        {/* Trending Albums Section */}
+
         <h2 className="mt-5">Trending Albums</h2>
         <div className="scroll-container">
           {trendingAlbums.map(({ album, imageUrl }) => (
@@ -236,7 +221,6 @@ function Homepage() {
               className="card album-card"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {/* Card Content */}
               {imageUrl ? (
                 <img src={imageUrl} className="card-img-top" alt={album.name} />
               ) : (
@@ -249,8 +233,7 @@ function Homepage() {
             </button>
           ))}
         </div>
-  
-        {/* New Album Releases Section */}
+
         <h2 className="mt-5">New Album Releases</h2>
         <div className="scroll-container">
           {newAlbumReleases.map(album => (
@@ -260,7 +243,6 @@ function Homepage() {
               className="card album-card"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {/* Card Content */}
               {album.images && album.images[0] ? (
                 <img src={album.images[0].url} className="card-img-top" alt={album.name} />
               ) : (
@@ -273,33 +255,32 @@ function Homepage() {
             </button>
           ))}
         </div>
-  
-      {/* 1001 Albums Section */}
-      <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
-      <div className="scroll-container">
-        {recommendedAlbums.map(album => (
-          <button
-            key={album.id}
-            onClick={openSpotifyLink(album.spotifyUri, album.spotifyLink)}
-            className="card album-card"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {album.cover ? (
-              <img src={album.cover} className="card-img-top" alt={album.album} />
-            ) : (
-              <div className="no-image-placeholder">No Image Available</div>
-            )}
-            <div className="card-body">
-              <h5 className="card-title">{album.album}</h5>
-              <p className="card-text">By {album.artist}</p>
-              <p className="card-text">Released: {album.year || 'Unknown'}</p>
-            </div>
-          </button>
-        ))}
-      </div>
 
+        <h2 className="mt-5">1001 Albums You Must Hear Before You Die</h2>
+        <div className="scroll-container">
+          {recommendedAlbums.map(album => (
+            <button
+              key={album.id}
+              onClick={openSpotifyLink(album.spotifyUri, album.spotifyLink)}
+              className="card album-card"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {album.cover ? (
+                <img src={album.cover} className="card-img-top" alt={album.album} />
+              ) : (
+                <div className="no-image-placeholder">No Image Available</div>
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{album.album}</h5>
+                <p className="card-text">By {album.artist}</p>
+                <p className="card-text">Released: {album.year || 'Unknown'}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-    );
-  }
-  
-  export default Homepage;
+    </div>
+  );
+}
+
+export default Homepage;
