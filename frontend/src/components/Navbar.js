@@ -11,22 +11,36 @@ const Navbar = ({ user, onLogin, onLogout }) => {
     }
   };
 
+  const goToUserPage = () => {
+    navigate('/user'); // Redirect to user page
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: '#333333' }}>
-      <a className="navbar-brand" href="/">Musicbox</a>
-      <div className="collapse navbar-collapse">
-        <div className="ml-auto mr-3">
+      <div className="container-fluid">
+        {/* Brand Name */}
+        <a className="navbar-brand" href="/">Musicbox</a>
+
+        {/* Search Bar - aligned to the right of the brand */}
+        <div className="d-flex align-items-center ms-3">
           <SearchBar onSearch={handleSearch} />
         </div>
-        <div className="justify-content-end">
+
+        {/* Right-aligned user button and logout button */}
+        <div className="ms-auto d-flex align-items-center">
           {user ? (
-            <div className="navbar-text">
-              Welcome, {user.username}!
-              <button className="btn btn-secondary ml-2" onClick={onLogout}>Logout</button>
-            </div>
+            <>
+              {/* User button with dark outline */}
+              <button className="btn btn-outline-light me-2" onClick={goToUserPage}>
+                {user.username}
+              </button>
+              
+              {/* Logout button with red outline */}
+              <button className="btn btn-outline-danger" onClick={onLogout}>Logout</button>
+            </>
           ) : (
             <>
-              <button className="btn btn-outline-primary mr-2" onClick={() => onLogin('login')}>Login</button>
+              <button className="btn btn-outline-light me-2" onClick={() => onLogin('login')}>Login</button>
               <button className="btn btn-outline-success" onClick={() => onLogin('register')}>Register</button>
             </>
           )}

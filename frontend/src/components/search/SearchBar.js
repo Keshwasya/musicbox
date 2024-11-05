@@ -19,7 +19,7 @@ const SearchBar = ({ onSearch }) => {
         onChange={(e) => setQuery(e.target.value)}
         onKeyPress={handleKeyPress}
       />
-      <button className="btn btn-primary" onClick={() => onSearch(query)}>
+      <button className="btn btn-outline-primary" onClick={() => onSearch(query)}>
         Search
       </button>
     </div>
