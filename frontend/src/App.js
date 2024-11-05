@@ -1,38 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import Routes from './router/Routes';
+import { BrowserRouter as Router } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from './components/Navbar';
+import AuthModal from './components/AuthModal';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('login'); // 'login' or 'register'
 
   useEffect(() => {
-    // Check if user is already logged in by verifying token and user data in local storage
     const token = localStorage.getItem('token');
     let userData = localStorage.getItem('user');
 
-    console.log("Raw user data from localStorage:", userData); // Log raw user data for debugging
-
-    // Only proceed if userData is a valid JSON string
     if (token && userData && userData !== "undefined") {
       try {
         const parsedUserData = JSON.parse(userData);
         setUser(parsedUserData);
       } catch (error) {
         console.error("Failed to parse user data:", error);
-        // If parsing fails, clear the invalid user data from localStorage
         localStorage.removeItem('user');
       }
     }
   }, []);
 
   const handleLogin = (userData, token) => {
-    console.log("User data received on login:", userData); // Log user data
     setUser(userData);
-    localStorage.setItem('token', token); // Save token for session persistence
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user info for display
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setIsModalOpen(false); // Close the modal after logging in
   };
-  
-  
 
   const handleLogout = () => {
     setUser(null);
@@ -40,7 +38,29 @@ function App() {
     localStorage.removeItem('user');
   };
 
-  return <Routes user={user} onLogin={handleLogin} onLogout={handleLogout} />;
+  const openModal = (type) => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <Router>
+      <Navbar user={user} onLogin={() => openModal('login')} onLogout={handleLogout} />
+      <Routes user={user} onLogin={handleLogin} onLogout={handleLogout} />
+      
+      {isModalOpen && (
+        <AuthModal
+          type={modalType}
+          onClose={closeModal}
+          onLogin={handleLogin}
+        />
+      )}
+    </Router>
+  );
 }
 
 export default App;

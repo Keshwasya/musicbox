@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAccessToken } from '../utils/spotifyAuth';
 import { albums1001 } from '../data/albums1001';
-import Navbar from './Navbar';
 import AuthModal from './AuthModal';
 
 function Homepage({ user, onLogin, onLogout }) {
@@ -169,10 +168,7 @@ function Homepage({ user, onLogin, onLogout }) {
   }, [fetchRandomRecommendations]);
 
   return (
-    <div>
-      {/* Navbar at the top */}
-      <Navbar user={user} onLogin={openModal} onLogout={onLogout} />
-      
+    <div>      
       {/* Auth Modal */}
       {modalType && <AuthModal type={modalType} onClose={closeModal} onLogin={onLogin} />}
 

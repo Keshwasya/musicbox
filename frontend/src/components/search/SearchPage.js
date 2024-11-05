@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
-import SearchBar from './SearchBar';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import SearchResults from './SearchResults';
 import axios from 'axios';
 
 const SearchPage = () => {
   const [results, setResults] = useState([]);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search).get('query');
+
+  useEffect(() => {
+    if (query) {
+      handleSearch(query);
+    }
+  }, [query]);
 
   const handleSearch = async (query) => {
     try {
-      const response = await axios.get(`/api/search`, {
-        params: { query },
-      });
+      const response = await axios.get(`/api/search`, { params: { query } });
       setResults(response.data);
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -18,9 +24,8 @@ const SearchPage = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', padding: '20px' }}>
-      <h1 className="text-center">Album Search</h1>
-      <SearchBar onSearch={handleSearch} />
+    <div className="container text-center my-4">
+      <h1>Album Search</h1>
       <SearchResults results={results} />
     </div>
   );
