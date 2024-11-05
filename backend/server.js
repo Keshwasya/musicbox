@@ -5,6 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes'); // Import authentication routes
 const userRoutes = require('./routes/userRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 
 const app = express();
 const PORT = 3001;
@@ -17,6 +18,7 @@ app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/reviews', reviewRoutes);
+app.use('/api', searchRoutes);
 
 // Catch all other routes and serve the frontend
 app.get('*', (req, res) => {

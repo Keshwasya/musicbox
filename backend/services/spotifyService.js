@@ -1,33 +1,40 @@
 const axios = require('axios');
 const querystring = require('querystring');
 
+let cachedToken = null;
+let tokenExpiry = null;
+
 // Get Spotify access token
 async function getSpotifyAccessToken() {
-  const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = process.env;
+  // If the token is still valid, return it
+  if (cachedToken && Date.now() < tokenExpiry) {
+    return cachedToken;
+  }
 
   try {
     const response = await axios.post(
       'https://accounts.spotify.com/api/token',
-      querystring.stringify({ grant_type: 'client_credentials' }),
+      new URLSearchParams({ grant_type: 'client_credentials' }),
       {
         headers: {
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+          ).toString('base64')}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization:
-            'Basic ' +
-            Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET).toString(
-              'base64'
-            ),
         },
       }
     );
 
-    console.log('Spotify Access Token:', response.data.access_token);
-    return response.data.access_token;
+    // Cache the token and set the expiry time
+    cachedToken = response.data.access_token;
+    tokenExpiry = Date.now() + response.data.expires_in * 1000;
+    return cachedToken;
   } catch (error) {
-    console.error('Error fetching Spotify access token:', error.response?.data || error);
+    console.error('Error fetching Spotify access token:', error);
     throw new Error('Failed to fetch Spotify access token');
   }
 }
+
 
 // Get album data from Spotify
 async function getAlbumData(albumId) {
@@ -47,4 +54,4 @@ async function getAlbumData(albumId) {
   }
 }
 
-module.exports = { getAlbumData };
+module.exports = { getAlbumData, getSpotifyAccessToken };
