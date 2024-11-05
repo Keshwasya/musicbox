@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Followers: Self-referential many-to-many relationship
       User.belongsToMany(models.User, {
-        as: 'Followers',
+        as: 'followers',
         through: 'UserFollowers',
         foreignKey: 'userId',
         otherKey: 'followerId',
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     
       // Following: Self-referential many-to-many relationship (optional)
       User.belongsToMany(models.User, {
-        as: 'Following',
+        as: 'following',
         through: 'UserFollowers',
         foreignKey: 'followerId',
         otherKey: 'userId',
@@ -49,11 +49,11 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    followers: DataTypes.JSON,
-    backlog: DataTypes.JSON,
-    currentRotation: DataTypes.JSON,
+    followersData: DataTypes.JSON, // Renamed to avoid conflict
+    backlogData: DataTypes.JSON, // Renamed to avoid conflict
+    currentRotationData: DataTypes.JSON, // Renamed to avoid conflict
     profilePicture: DataTypes.STRING,
-    bio: DataTypes.TEXT
+    bio: DataTypes.TEXT,
   }, {
     sequelize,
     modelName: 'User',

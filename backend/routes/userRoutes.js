@@ -2,9 +2,16 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 const userAlbumController = require('../controllers/userAlbumController');
+const { getUserFeed } = require('../controllers/userController');
+const { getFollowersAndFollowing } = require('../controllers/userController');
 
 
 const router = express.Router();
+
+router.get('/:userId/followers-following', authMiddleware, getFollowersAndFollowing);
+
+// User feed route
+router.get('/:userId/feed', authMiddleware, getUserFeed);
 
 // Retrieve user profile data (including followers, backlog, and current rotation)
 router.get('/:id', authMiddleware, userController.getUserProfile);
