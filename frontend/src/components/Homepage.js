@@ -2,16 +2,114 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getAccessToken } from '../utils/spotifyAuth';
 import { albums1001 } from '../data/albums1001';
 import AuthModal from './AuthModal';
+import axios from 'axios';
 
 function Homepage({ user, onLogin, onLogout }) {
   const [newAlbumReleases, setNewAlbumReleases] = useState([]);
   const [trendingArtists, setTrendingArtists] = useState([]);
   const [trendingAlbums, setTrendingAlbums] = useState([]);
   const [recommendedAlbums, setRecommendedAlbums] = useState([]);
-  const [modalType, setModalType] = useState(null); // Track modal type (login/register)
+  const [modalType, setModalType] = useState(null); 
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [backlog, setBacklog] = useState([]);
+  const [currentRotation, setCurrentRotation] = useState([]);
+  const [alert, setAlert] = useState({ message: '', type: '' });
+  const userId = localStorage.getItem('userId');
 
   const openModal = (type) => setModalType(type);
   const closeModal = () => setModalType(null);
+
+  const handleAlbumClick = async (album) => {
+      setSelectedAlbum(album);
+  };
+
+  const handleClosePopup = () => {
+      setSelectedAlbum(null);
+  };
+
+  // Add/remove album in the backlog
+  const handleAddOrRemoveBacklog = async () => {
+      const token = localStorage.getItem('token');
+      try {
+          const existingAlbum = backlog.find(album => album.title === selectedAlbum.name);
+          if (existingAlbum) {
+              const deleteUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/backlog/${existingAlbum.id}`;
+              console.log('DELETE request URL:', deleteUrl);
+              await axios.delete(deleteUrl, {
+                  headers: { Authorization: `Bearer ${token}` }
+              });
+              setAlert({ message: 'Album removed from backlog', type: 'success' });
+              setBacklog(backlog.filter(album => album.id !== existingAlbum.id));
+          } else {
+              const postUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/backlog`;
+              const response = await axios.post(postUrl, {
+                  spotifyAlbumId: selectedAlbum.id
+              }, {
+                  headers: { Authorization: `Bearer ${token}` }
+              });
+              console.log("Backend response data:", response.data);  // Log backend response
+              setAlert({ message: 'Album added to backlog', type: 'success' });
+              setBacklog([...backlog, { id: response.data.album.id, title: selectedAlbum.name }]);
+          }
+      } catch (error) {
+          console.error('Error updating backlog:', error);
+          setAlert({ message: 'Failed to update backlog', type: 'danger' });
+      }
+      setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+      handleClosePopup();
+  };
+
+  const handleAddOrRemoveCurrentRotation = async () => {
+      const token = localStorage.getItem('token');
+      try {
+          const existingAlbum = currentRotation.find(album => album.title === selectedAlbum.name);
+          if (existingAlbum) {
+              const deleteUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/rotation/${existingAlbum.id}`;
+              console.log('DELETE request URL:', deleteUrl);
+              await axios.delete(deleteUrl, {
+                  headers: { Authorization: `Bearer ${token}` }
+              });
+              setAlert({ message: 'Album removed from current rotation', type: 'success' });
+              setCurrentRotation(currentRotation.filter(album => album.id !== existingAlbum.id));
+          } else {
+              const postUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/rotation`;
+              const response = await axios.post(postUrl, {
+                  spotifyAlbumId: selectedAlbum.id
+              }, {
+                  headers: { Authorization: `Bearer ${token}` }
+              });
+              console.log("Backend response data:", response.data);  // Log backend response
+              setAlert({ message: 'Album added to current rotation', type: 'success' });
+              setCurrentRotation([...currentRotation, { id: response.data.album.id, title: selectedAlbum.name }]);
+          }
+      } catch (error) {
+          console.error('Error updating current rotation:', error);
+          setAlert({ message: 'Failed to update current rotation', type: 'danger' });
+      }
+      setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+      handleClosePopup();
+  };
+
+
+  // Open Spotify with fallback
+  const handleOpenInSpotify = () => {
+    const spotifyUri = `spotify:album:${selectedAlbum.id}`;
+    const webUrl = selectedAlbum.external_urls.spotify;
+    
+    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
+    
+    if (isDesktop) {
+        const appWindow = window.open(spotifyUri, '_self');
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                window.open(webUrl, '_blank');
+            }
+        }, 1500);
+    } else {
+        window.open(webUrl, '_blank');
+    }
+    handleClosePopup();
+  };
 
   // Fetch New Album Releases
   const fetchNewAlbumReleases = async () => {
@@ -78,70 +176,72 @@ function Homepage({ user, onLogin, onLogout }) {
   };
 
   const fetchAlbumDetails = async (album) => {
-    const token = await getAccessToken();
-    try {
-      const query = `album:${encodeURIComponent(album.album)} artist:${encodeURIComponent(album.artist)}`;
-      let response = await fetch(
-        `https://api.spotify.com/v1/search?q=${query}&type=album&limit=5`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    
-      let data = await response.json();
-    
-      let spotifyAlbum = data.albums.items.find(
-        (item) =>
-          item.name.toLowerCase() === album.album.toLowerCase() &&
-          item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
-      );
-    
-      if (!spotifyAlbum) {
-        response = await fetch(
-          `https://api.spotify.com/v1/search?q=album:${encodeURIComponent(album.album)}&type=album&limit=10`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        data = await response.json();
-  
-        spotifyAlbum = data.albums.items.find(
-          (item) =>
-            item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
-        );
+      const token = await getAccessToken();
+      try {
+          const query = `album:${encodeURIComponent(album.album)} artist:${encodeURIComponent(album.artist)}`;
+          let response = await fetch(
+              `https://api.spotify.com/v1/search?q=${query}&type=album&limit=5`,
+              { headers: { Authorization: `Bearer ${token}` } }
+          );
+        
+          let data = await response.json();
+        
+          let spotifyAlbum = data.albums.items.find(
+              (item) =>
+                  item.name.toLowerCase() === album.album.toLowerCase() &&
+                  item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
+          );
+        
+          if (!spotifyAlbum) {
+              response = await fetch(
+                  `https://api.spotify.com/v1/search?q=album:${encodeURIComponent(album.album)}&type=album&limit=10`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+              );
+              data = await response.json();
+        
+              spotifyAlbum = data.albums.items.find(
+                  (item) =>
+                      item.artists.some((artist) => artist.name.toLowerCase() === album.artist.toLowerCase())
+              );
+          }
+        
+          if (spotifyAlbum) {
+              const releaseDate = spotifyAlbum.release_date;
+              const releaseYear = releaseDate ? releaseDate.split("-")[0] : null;
+              const spotifyUri = `spotify:album:${spotifyAlbum.id}`;
+              const spotifyLink = spotifyAlbum.external_urls.spotify;
+        
+              return {
+                  id: album.id,
+                  artist: album.artist,
+                  album: album.album,
+                  year: releaseYear,
+                  cover: spotifyAlbum.images[0]?.url,
+                  spotifyUri, // Add Spotify URI
+                  spotifyLink, // Add Spotify Link
+              };
+          }
+      } catch (error) {
+          console.error("Error fetching album details from Spotify:", error);
       }
-    
-      if (spotifyAlbum) {
-        const releaseDate = spotifyAlbum.release_date;
-        const releaseYear = releaseDate ? releaseDate.split("-")[0] : null;
-        const spotifyUri = `spotify:album:${spotifyAlbum.id}`;
-        const spotifyLink = spotifyAlbum.external_urls.spotify;
-  
-        return {
-          id: album.id,
-          artist: album.artist,
-          album: album.album,
-          year: releaseYear,
-          cover: spotifyAlbum.images[0]?.url,
-          spotifyUri,
-          spotifyLink,
-        };
-      }
-    } catch (error) {
-      console.error("Error fetching album details from Spotify:", error);
-    }
-    return album;
+      return album; // Return original album data if Spotify details are not found
   };
 
+
   const fetchRandomRecommendations = useCallback(async () => {
-    const priorityAlbumName = "Midnight Ride";
+    const priorityAlbumName = "";
     const priorityAlbum = albums1001.find(album => album.album === priorityAlbumName);
     let shuffledAlbums = albums1001.filter(album => album.album !== priorityAlbumName).sort(() => 0.5 - Math.random()).slice(0, 19);
-  
+
     if (priorityAlbum) {
-      shuffledAlbums = [priorityAlbum, ...shuffledAlbums];
+        shuffledAlbums = [priorityAlbum, ...shuffledAlbums];
     }
-  
+
     const albumDetailsPromises = shuffledAlbums.map(album => fetchAlbumDetails(album));
     const albumsWithDetails = await Promise.all(albumDetailsPromises);
     setRecommendedAlbums(albumsWithDetails);
-  }, []);
+}, []);
+
 
   const openSpotifyLink = (spotifyUri, webUrl) => (event) => {
     event.preventDefault();
@@ -213,7 +313,8 @@ function Homepage({ user, onLogin, onLogout }) {
           {trendingAlbums.map(({ album, imageUrl }) => (
             <button
               key={album.id}
-              onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              //onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              onClick={() => handleAlbumClick(album)}
               className="card album-card"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
@@ -235,7 +336,8 @@ function Homepage({ user, onLogin, onLogout }) {
           {newAlbumReleases.map(album => (
             <button
               key={album.id}
-              onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              //onClick={openSpotifyLink(`spotify:album:${album.id}`, `https://open.spotify.com/album/${album.id}`)}
+              onClick={() => handleAlbumClick(album)}
               className="card album-card"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
@@ -275,7 +377,45 @@ function Homepage({ user, onLogin, onLogout }) {
           ))}
         </div>
       </div>
+
+      {selectedAlbum && (
+        <div
+            className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050 }}
+            onClick={handleClosePopup}
+        >
+            <div
+                className="bg-white rounded p-4 shadow-lg text-center"
+                style={{ width: '300px' }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h4>{selectedAlbum.name} Options</h4>
+
+                <button className="btn btn-primary w-100 mb-2" onClick={() => console.log(`Creating review for album: ${selectedAlbum.name}`)}>Create Review</button>
+
+                <button
+                    className="btn btn-secondary w-100 mb-2"
+                    onClick={handleAddOrRemoveBacklog}
+                >
+                    {backlog.some(album => album.title === selectedAlbum.name) ? 'Remove from Backlog' : 'Add to Backlog'}
+                </button>
+
+                <button
+                    className="btn btn-secondary w-100 mb-2"
+                    onClick={handleAddOrRemoveCurrentRotation}
+                >
+                    {currentRotation.some(album => album.title === selectedAlbum.name) ? 'Remove from Current Rotation' : 'Add to Current Rotation'}
+                </button>
+
+                <button className="btn btn-success w-100" onClick={handleOpenInSpotify}>Open in Spotify</button>
+                <button className="btn btn-light w-100 mt-2" onClick={handleClosePopup}>Close</button>
+            </div>
+        </div>
+    )}
+
     </div>
+
+    
   );
 }
 

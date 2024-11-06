@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const SearchResults = ({ results }) => {
@@ -9,38 +9,31 @@ const SearchResults = ({ results }) => {
   const [alert, setAlert] = useState({ message: '', type: '' });
   const userId = localStorage.getItem('userId');
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchUserBacklog();
-      fetchUserCurrentRotation();
-    }
-  }, [isLoggedIn]);
 
-  const fetchUserBacklog = async () => {
+
+  const fetchUserBacklog = useCallback(async () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/backlog`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // Store each album as an object with id and title
         setBacklog(response.data.map(album => ({ id: album.id, title: album.title })));
     } catch (error) {
         console.error('Error fetching backlog:', error);
     }
-};
+  }, [userId]);
 
-const fetchUserCurrentRotation = async () => {
+  const fetchUserCurrentRotation = useCallback(async () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userId}/current-rotation`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // Store each album as an object with id and title
         setCurrentRotation(response.data.map(album => ({ id: album.id, title: album.title })));
     } catch (error) {
         console.error('Error fetching current rotation:', error);
     }
-};
+  }, [userId]);
 
 
   
@@ -65,58 +58,69 @@ const fetchUserCurrentRotation = async () => {
   };
 
   const handleAddOrRemoveBacklog = async () => {
-      const token = localStorage.getItem('token');
-      try {
-          const existingAlbum = backlog.find(album => album.title === selectedAlbum.name);
-          if (existingAlbum) {
-              await axios.delete(`${process.env.REACT_APP_API_URL}/users/${userId}/backlog/${existingAlbum.id}`, {
-                  headers: { Authorization: `Bearer ${token}` }
-              });
-              setAlert({ message: 'Album removed from backlog', type: 'success' });
-              setBacklog(backlog.filter(album => album.id !== existingAlbum.id));
-          } else {
-              const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/backlog`, {
-                  albumTitle: selectedAlbum.name
-              }, {
-                  headers: { Authorization: `Bearer ${token}` }
-              });
-              setAlert({ message: 'Album added to backlog', type: 'success' });
-              setBacklog([...backlog, { id: response.data.id, title: selectedAlbum.name }]);
-          }
-      } catch (error) {
-          console.error('Error updating backlog:', error);
-          setAlert({ message: 'Failed to update backlog', type: 'danger' });
-      }
-      setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+    const token = localStorage.getItem('token');
+    try {
+        const existingAlbum = backlog.find(album => album.title === selectedAlbum.name);
+        if (existingAlbum) {
+            const deleteUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/backlog/${existingAlbum.id}`;
+            console.log('DELETE request URL:', deleteUrl);
+            await axios.delete(deleteUrl, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAlert({ message: 'Album removed from backlog', type: 'success' });
+            setBacklog(backlog.filter(album => album.id !== existingAlbum.id));
+        } else {
+            const postUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/backlog`;
+            const response = await axios.post(postUrl, {
+                spotifyAlbumId: selectedAlbum.id
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("Backend response data:", response.data);  // Log backend response
+            setAlert({ message: 'Album added to backlog', type: 'success' });
+            setBacklog([...backlog, { id: response.data.album.id, title: selectedAlbum.name }]);
+        }
+    } catch (error) {
+        console.error('Error updating backlog:', error);
+        setAlert({ message: 'Failed to update backlog', type: 'danger' });
+    }
+    setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+    handleClosePopup();
   };
 
 
 
   const handleAddOrRemoveCurrentRotation = async () => {
-      const token = localStorage.getItem('token');
-      try {
-          const existingAlbum = currentRotation.find(album => album.title === selectedAlbum.name);
-          if (existingAlbum) {
-              await axios.delete(`${process.env.REACT_APP_API_URL}/users/${userId}/current-rotation/${existingAlbum.id}`, {
-                  headers: { Authorization: `Bearer ${token}` }
-              });
-              setAlert({ message: 'Album removed from current rotation', type: 'success' });
-              setCurrentRotation(currentRotation.filter(album => album.id !== existingAlbum.id));
-          } else {
-              const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/${userId}/current-rotation`, {
-                  albumTitle: selectedAlbum.name
-              }, {
-                  headers: { Authorization: `Bearer ${token}` }
-              });
-              setAlert({ message: 'Album added to current rotation', type: 'success' });
-              setCurrentRotation([...currentRotation, { id: response.data.id, title: selectedAlbum.name }]);
-          }
-      } catch (error) {
-          console.error('Error updating current rotation:', error);
-          setAlert({ message: 'Failed to update current rotation', type: 'danger' });
-      }
-      setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+    const token = localStorage.getItem('token');
+    try {
+        const existingAlbum = currentRotation.find(album => album.title === selectedAlbum.name);
+        if (existingAlbum) {
+            const deleteUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/rotation/${existingAlbum.id}`;
+            console.log('DELETE request URL:', deleteUrl);
+            await axios.delete(deleteUrl, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAlert({ message: 'Album removed from current rotation', type: 'success' });
+            setCurrentRotation(currentRotation.filter(album => album.id !== existingAlbum.id));
+        } else {
+            const postUrl = `${process.env.REACT_APP_API_URL}/users/${userId}/rotation`;
+            const response = await axios.post(postUrl, {
+                spotifyAlbumId: selectedAlbum.id
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("Backend response data:", response.data);  // Log backend response
+            setAlert({ message: 'Album added to current rotation', type: 'success' });
+            setCurrentRotation([...currentRotation, { id: response.data.album.id, title: selectedAlbum.name }]);
+        }
+    } catch (error) {
+        console.error('Error updating current rotation:', error);
+        setAlert({ message: 'Failed to update current rotation', type: 'danger' });
+    }
+    setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+    handleClosePopup();
   };
+
 
 
 
@@ -124,12 +128,35 @@ const fetchUserCurrentRotation = async () => {
   
 
   const handleOpenInSpotify = () => {
-    window.open(selectedAlbum.external_urls.spotify, '_blank');
+    const spotifyUri = `spotify:album:${selectedAlbum.id}`;
+    const webUrl = selectedAlbum.external_urls.spotify;
+    
+    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
+    
+    if (isDesktop) {
+        const appWindow = window.open(spotifyUri, '_self');
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                window.open(webUrl, '_blank');
+            }
+        }, 1500);
+    } else {
+        window.open(webUrl, '_blank');
+    }
+    handleClosePopup();
   };
 
   const handleCreateReview = (album) => {
     console.log(`Creating review for album: ${album.name}`);
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+        fetchUserBacklog();
+        fetchUserCurrentRotation();
+    }
+}, [isLoggedIn, fetchUserBacklog, fetchUserCurrentRotation]);
+
 
   return (
     <div className="container my-4">
@@ -194,10 +221,10 @@ const fetchUserCurrentRotation = async () => {
 
           <button className="btn btn-primary w-100 mb-2" onClick={() => handleCreateReview(selectedAlbum)}>Create Review</button>
 
-          {/* Add console log to check backlog and current rotation */}
+          {/* Add console log to check backlog and current rotation
           {console.log("Checking if album is in backlog:", selectedAlbum.name)}
           {console.log("Backlog contains:", backlog)}
-          {console.log("Current Rotation contains:", currentRotation)}
+          {console.log("Current Rotation contains:", currentRotation)} */}
 
           <button
               className="btn btn-secondary w-100 mb-2"
