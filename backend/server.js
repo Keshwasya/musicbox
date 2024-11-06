@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json()); // Middleware to parse JSON
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
-// routes
+// API routes
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/reviews', reviewRoutes);
@@ -22,13 +22,16 @@ app.use('/api', searchRoutes);
 
 // Catch all other routes and serve the frontend
 app.get('*', (req, res) => {
-  // Serve index.html only for non-API routes
-  if (!req.path.startsWith('/auth') && !req.path.startsWith('/users')) {
+  if (!req.path.startsWith('/auth') && 
+      !req.path.startsWith('/users') && 
+      !req.path.startsWith('/reviews') && 
+      !req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
   } else {
     res.status(404).send('API route not found');
   }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
