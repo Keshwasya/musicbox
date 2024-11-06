@@ -18,6 +18,11 @@ const AuthModal = ({ type, onClose, onLogin }) => {
      
       const { token, user } = response.data;
       console.log("Calling onLogin with user:", user, "and token:", token); // Log onLogin call
+
+      // Store the user ID and token in localStorage
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('token', token);
+      console.log("User ID:", localStorage.getItem('userId'));
   
       // Call onLogin with user and token
       onLogin(user, token);
