@@ -2,16 +2,11 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 const userAlbumController = require('../controllers/userAlbumController');
-const { getUserFeed } = require('../controllers/userController');
-const { getFollowersAndFollowing } = require('../controllers/userController');
-
 
 const router = express.Router();
 
-router.get('/:userId/followers-following', authMiddleware, getFollowersAndFollowing);
-
 // User feed route
-router.get('/:userId/feed', authMiddleware, getUserFeed);
+router.get('/:id/feed', authMiddleware, userController.getUserFeed);
 
 // Retrieve user profile data (including followers, backlog, and current rotation)
 router.get('/:id', authMiddleware, userController.getUserProfile);
@@ -26,11 +21,17 @@ router.post('/:id/follow', authMiddleware, userController.followUser);
 router.delete('/:id/unfollow', authMiddleware, userController.unfollowUser);
 
 // Backlog routes
-router.post('/:userId/backlog', authMiddleware, userAlbumController.addToBacklog);
-router.delete('/:userId/backlog/:albumId', authMiddleware, userAlbumController.removeFromBacklog);
+router.post('/:id/backlog', authMiddleware, userAlbumController.addToBacklog);
+router.delete('/:id/backlog/:albumId', authMiddleware, userAlbumController.removeFromBacklog);
+router.get('/:id/backlog', authMiddleware, userAlbumController.getUserBacklog);
 
 // Current Rotation routes
-router.post('/:userId/rotation', authMiddleware, userAlbumController.addToCurrentRotation);
-router.delete('/:userId/rotation/:albumId', authMiddleware, userAlbumController.removeFromCurrentRotation);
+router.post('/:id/rotation', authMiddleware, userAlbumController.addToCurrentRotation);
+router.delete('/:id/rotation/:albumId', authMiddleware, userAlbumController.removeFromCurrentRotation);
+router.get('/:id/current-rotation', authMiddleware, userAlbumController.getUserCurrentRotation);
+
+// Other user data routes
+router.get('/:id/followers-following', authMiddleware, userController.getFollowersAndFollowing); // Get followers and following
+router.get('/:id/recent-reviews', authMiddleware, userController.getUserFeed); // Get recent reviews from followed users
 
 module.exports = router;

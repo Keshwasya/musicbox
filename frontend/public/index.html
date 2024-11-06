@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,33 +18,26 @@
     <meta name="description" content="Discover and review music albums on Musicbox. Explore trending albums, artists, and recommendations." />
     <meta name="keywords" content="music reviews, album reviews, Spotify, trending albums, artists, Musicbox" />
 
-
     <title>Musicbox</title>
 
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-
-    <!--  Google Font for a clean, modern look -->
+    <!-- Google Font for a clean, modern look -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-5aOHZK2XGIBiN6+fQFJmcZ9hH5FFILPoFmH99ivvhYo6m1dAuOk9ZlQJ06rTOe5YoB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
-
-
+    <!-- Bootstrap CSS with integrity attribute -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
 
     <!-- Custom CSS for global styling -->
     <style>
       body {
         font-family: 'Roboto', sans-serif;
-        background-color: #f8f9fa; /* Light gray color */
+        background-color: #f8f9fa;
       }
     
       .container {
@@ -75,10 +69,10 @@
         text-align: center;
       }
 
-      /* Apply additional spacing only for mobile screens */
+      /* Additional spacing for mobile screens */
       @media (max-width: 768px) {
         .album-card, .artist-card {
-          margin: 0 1px; /* Increase margin for mobile devices only */
+          margin: 0 1px;
         }
       }
 
@@ -94,7 +88,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.1rem; /* Tighter spacing between title and artist */
+        gap: 0.1rem;
         padding: 0.5rem 0;
         box-sizing: border-box;
       }
@@ -114,17 +108,16 @@
       .card-text {
         font-size: 0.8em;
         color: #555;
-        white-space: nowrap;       /* Prevents text wrapping */
-        overflow: hidden;          /* Hides overflowed text */
-        text-overflow: ellipsis;   /* Adds ellipsis (...) for truncated text */
-        width: 100%;               /* Ensures it stays within the card width */
-        max-width: 130px;          /* Constrains the width */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        max-width: 130px;
         margin: 0;
         text-align: center;
-        display: block;            /* Ensures block-level behavior for ellipsis */
+        display: block;
       }
 
-    
       .scroll-container::-webkit-scrollbar {
         height: 8px;
       }
@@ -135,21 +128,23 @@
       }
 
       .jumbotron {
-        margin-bottom: 1rem; /* Reduce the space below the banner */
+        margin-bottom: 1rem;
       }
 
       .scroll-container {
-        margin-top: 1rem; /* Reduce the space above the Top Albums section */
-}
+        margin-top: 1rem;
+      }
     </style>
     
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- Bootstrap JS, Popper.js, and jQuery for interactive components -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap JS with integrity attribute -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RcW1LtnZ8qwWowPQNgUL3RmwbHVBC9FH9Rl9+4npMdx9/g6Y3e9gqKC4eT"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

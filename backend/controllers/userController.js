@@ -1,11 +1,12 @@
 const { User, Album, Review } = require('../models');
+const { Op } = require('sequelize');
 
 // Retrieve list of followers and following for a user
-exports.getFollowersAndFollowing = async (req, res) => {
-  const { userId } = req.params;
+const getFollowersAndFollowing = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const user = await User.findByPk(userId, {
+    const user = await User.findByPk(id, {
       include: [
         { model: User, as: 'followers', attributes: ['id', 'username'] },
         { model: User, as: 'following', attributes: ['id', 'username'] },
@@ -26,68 +27,59 @@ exports.getFollowersAndFollowing = async (req, res) => {
 };
 
 
-// Retrieve user feed (activity from followed users)
-exports.getUserFeed = async (req, res) => {
-  const userId = req.user.id; // Assuming req.user.id is set by authMiddleware
-
+// Get recent reviews from followed users
+const getUserFeed = async (req, res) => {
+  const id = req.params.id;
   try {
-    // Fetch the user with only the 'following' association specified by 'as'
-    const user = await User.findByPk(userId, {
-      include: [{ model: User, as: 'following', attributes: ['id'] }] // Specify 'as' for the association
+    const user = await User.findByPk(id, {
+      include: [{ model: User, as: 'following', attributes: ['id'] }]
     });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const followingIds = user.following.map(followedUser => followedUser.id);
-
-    // Fetch recent activities for the users that the current user is following
     const feedActivities = await Review.findAll({
       where: { userId: followingIds },
+      include: { model: Album, attributes: ['title', 'artist'] },
       order: [['createdAt', 'DESC']],
-      limit: 20, // Limit to recent 20 activities
+      limit: 20,
     });
-
-    res.status(200).json(feedActivities);
+    res.json(feedActivities);
   } catch (error) {
-    console.error('Error fetching user feed:', error); // Log error for debugging
     res.status(500).json({ error: 'Failed to retrieve user feed' });
   }
 };
 
 
-
-
-
-
 // Get user profile data
-exports.getUserProfile = async (req, res) => {
-  const { id } = req.params;
-
+const getUserProfile = async (req, res) => {
   try {
+    const { id } = req.params;
+    console.log(`Fetching user profile for user ID: ${id}`);
+
+    // Find the user with associated followers and following data
     const user = await User.findByPk(id, {
+      attributes: ['id', 'username', 'email', 'profilePicture', 'bio'],
       include: [
-        { association: 'Followers', attributes: ['id', 'username'] },
-        { association: 'Following', attributes: ['id', 'username'] },
-        { association: 'Backlog', attributes: ['id', 'title'] },
-        { association: 'CurrentRotation', attributes: ['id', 'title'] },
-      ],
-      attributes: { exclude: ['password'] },
+        { association: 'followers', attributes: ['id', 'username'] },
+        { association: 'following', attributes: ['id', 'username'] }
+      ]
     });
 
     if (!user) {
+      console.log('User not found');
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.json(user);
   } catch (error) {
+    console.error('Error in getUserProfile:', error);
     res.status(500).json({ error: 'Failed to retrieve user profile' });
   }
 };
 
+
 // Update user information (profile picture, bio, etc.)
-exports.updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
   const { id } = req.params;
   const { profilePicture, bio } = req.body;
 
@@ -105,7 +97,7 @@ exports.updateUser = async (req, res) => {
 };
 
 // Follow a user
-exports.followUser = async (req, res) => {
+const followUser = async (req, res) => {
   const { id } = req.params;
   const followerId = req.user.id;
 
@@ -127,7 +119,7 @@ exports.followUser = async (req, res) => {
 };
 
 // Unfollow a user
-exports.unfollowUser = async (req, res) => {
+const unfollowUser = async (req, res) => {
   const { id } = req.params;
   const followerId = req.user.id;
 
@@ -142,4 +134,13 @@ exports.unfollowUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Failed to unfollow user' });
   }
+};
+
+module.exports = {
+  getUserProfile,
+  updateUser,
+  followUser,
+  unfollowUser,
+  getUserFeed,
+  getFollowersAndFollowing,
 };
