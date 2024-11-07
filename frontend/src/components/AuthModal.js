@@ -10,7 +10,7 @@ const AuthModal = ({ type, onClose, onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = type === 'login' ? '/auth/login' : '/auth/register';
+      const url = type === 'login' ? `${process.env.REACT_APP_API_URL}/auth/login` : `${process.env.REACT_APP_API_URL}/auth/register`;
       const data = type === 'login' ? { email, password } : { email, password, username };
   
       const response = await axios.post(url, data);
