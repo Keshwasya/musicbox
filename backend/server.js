@@ -8,7 +8,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json()); // Middleware to parse JSON
@@ -32,8 +32,11 @@ app.get('*', (req, res) => {
   }
 });
 
-
-// Start the server
+//start seerver
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`Server running on port ${PORT}`);
+  } else {
+    console.log(`Server running on http://localhost:${PORT}`);
+  }
 });

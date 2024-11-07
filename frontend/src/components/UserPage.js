@@ -10,19 +10,19 @@ const UserPage = ({ user }) => {
     const token = localStorage.getItem('token');
     try {
       // Fetch basic user info
-      const response = await axios.get(`http://localhost:3001/users/${user.id}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserInfo(response.data);
 
       // Fetch user backlog
-      const backlogResponse = await axios.get(`http://localhost:3001/users/${user.id}/backlog`, {
+      const backlogResponse = await axios.get(`${process.env.REACT_APP_API_URL}/users/${user.id}/backlog`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBacklog(backlogResponse.data);
 
       // Fetch user current rotation
-      const rotationResponse = await axios.get(`http://localhost:3001/users/${user.id}/current-rotation`, {
+      const rotationResponse = await axios.get(`${process.env.REACT_APP_API_URL}/users/${user.id}/current-rotation`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCurrentRotation(rotationResponse.data);
