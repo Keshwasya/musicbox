@@ -5,6 +5,15 @@
 ## Project Demo
 [**Live Demo**](https://musicbox-tawny.vercel.app/) - Hosted on Vercel and Render
 
+## Test Login
+
+To explore the app without creating an account, use the following test login:
+
+- **Email**: `test@test`
+- **Password**: `test`
+
+This account has basic user privileges to try out all major features like searching albums, adding to the backlog, following users, and writing reviews.
+
 ## Screenshots
 
 ### Homepage
