@@ -280,9 +280,11 @@ function Homepage({ user, onLogin, onLogout }) {
         <h5>Tech Stack:</h5>
         <ul className="list-unstyled">
           <li>Frontend: React, Bootstrap</li>
-          <li>Backend: Node.js, Express</li>
-          <li>Authentication: Spotify API</li>
-          <li>Deployment: Vercel (Frontend) and Render (Backend)</li>
+          <li>Backend: Node.js, Express, Sequelize</li>
+          <li>Authentication: JSON Web Tokens (JWT), bcrypt</li>
+          <li>Database: PostgreSQL</li>
+          <li>Special Feature: Spotify API Integration</li>
+          <li>Deployment: Vercel (Frontend) and Render (Backend & PostgreSQL Database)</li>
         </ul>
       </div>
       

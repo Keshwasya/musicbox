@@ -63,21 +63,27 @@ To get the project up and running on your local machine:
 1. **Clone the repository**:
    git clone https://github.com/your-username/musicbox.git
    cd musicbox
+
 2. **Install dependencies**:
    npm install
+
 3. **Configure Environment Variables**:
    Create a .env file in both the frontend and backend directories and add the required environment variables:
+
    - For the backend:
         DATABASE_URL=your_postgresql_database_url
         JWT_SECRET=your_jwt_secret
         SPOTIFY_CLIENT_ID=your_spotify_client_id
         SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+
    - For the frontend:
         REACT_APP_SPOTIFY_CLIENT_ID=7f4dd5f12f6d49069c927ea1b54e7e72
         REACT_APP_SPOTIFY_CLIENT_SECRET=a4e96e3c07f941ad8d6bc55604d6b84a
         REACT_APP_API_URL=https://musicbox-1964.onrender.com
+
 4. **Run Migrations**:
     npx sequelize-cli db:migrate
+
 5. **Start the Development Servers**:
     - Frontend (from the frontend dir)
         npm start
