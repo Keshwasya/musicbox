@@ -40,8 +40,8 @@ const Navbar = ({ user, onLogin, onLogout }) => {
             </>
           ) : (
             <>
-              <button className="btn btn-outline-light me-2" onClick={() => onLogin('login')}>Login</button>
-              <button className="btn btn-outline-success" onClick={() => onLogin('register')}>Register</button>
+            <button className="btn btn-outline-light me-2" onClick={() => onLogin('login')}>Login</button>
+            <button className="btn btn-outline-success" onClick={() => onLogin('register')}>Register</button>
             </>
           )}
         </div>

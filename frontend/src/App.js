@@ -49,7 +49,8 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} onLogin={() => openModal('login')} onLogout={handleLogout} />
+      <Navbar user={user} onLogin={openModal} onLogout={handleLogout} />
+
       <Routes user={user} onLogin={handleLogin} onLogout={handleLogout} />
       
       {isModalOpen && (
