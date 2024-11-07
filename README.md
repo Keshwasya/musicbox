@@ -5,6 +5,17 @@
 ## Project Demo
 [**Live Demo**](https://musicbox-tawny.vercel.app/) - Hosted on Vercel and Render
 
+## Screenshots
+
+### Homepage
+![Homepage](screenshots/homepage.png)
+
+### User Dashboard
+![User Dashboard](screenshots/user_profile.png)
+
+### Album Search
+![Album Search](screenshots/search.png)
+
 ## Technologies Used
 
 ### Frontend
