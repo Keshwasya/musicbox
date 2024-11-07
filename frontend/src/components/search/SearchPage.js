@@ -16,10 +16,11 @@ const SearchPage = () => {
 
   const handleSearch = async (query) => {
     try {
-      const response = await axios.get(`/api/search`, { params: { query } });
-      setResults(response.data);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/search`, { params: { query } });
+      setResults(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching search results:', error);
+      setResults([]); // Set to an empty array on error
     }
   };
 

@@ -171,10 +171,10 @@ const SearchResults = ({ results }) => {
       )}
 
       <div className="row justify-content-center">
-        {results.length === 0 ? (
+        {Array.isArray(results) && results.length === 0 ? (
           <p className="text-muted">No results found.</p>
         ) : (
-          results.map((album) => (
+          Array.isArray(results) && results.map((album) => (
             <div className="col-md-4 mb-4" key={album.id}>
               <div
                 className="card h-100 shadow-sm"
