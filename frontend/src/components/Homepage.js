@@ -277,15 +277,23 @@ function Homepage({ user, onLogin, onLogout }) {
         <h1 className="display-4">Welcome to Musicbox</h1>
         <p className="lead">By Keshwasya Singh</p>
         <hr className="my-2" />
-        <h5>Tech Stack:</h5>
+        <h3>Tech Stack:</h3>
         <ul className="list-unstyled">
-          <li>Frontend: React, Bootstrap</li>
-          <li>Backend: Node.js, Express, Sequelize</li>
-          <li>Authentication: JSON Web Tokens (JWT), bcrypt</li>
-          <li>Database: PostgreSQL</li>
-          <li>Special Feature: Spotify API Integration</li>
-          <li>Deployment: Vercel (Frontend) and Render (Backend & PostgreSQL Database)</li>
+          <li><strong>Frontend:</strong> React, Bootstrap</li>
+          <li><strong>Backend:</strong> Node.js, Express, Sequelize</li>
+          <li><strong>Authentication:</strong> JSON Web Tokens (JWT), bcrypt</li>
+          <li><strong>Database:</strong> PostgreSQL</li>
+          <li><strong>Special Feature:</strong> Spotify API Integration</li>
+          <li><strong>Deployment:</strong> Vercel (Frontend) and Render (Backend & PostgreSQL Database)</li>
+          <li>
+            <a href="https://github.com/Keshwasya/musicbox" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              GitHub Repository
+            </a>
+          </li>        
         </ul>
+        <h3>Test Login:</h3>
+        <p><strong>Email:</strong> test@test<br />
+        <strong>Password:</strong> test</p>
       </div>
       
       <div className="container my-5">
