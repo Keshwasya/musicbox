@@ -146,7 +146,9 @@ function Homepage({ user, onLogin, onLogout }) {
         const response = await axios.get(
           "https://api.spotify.com/v1/browse/new-releases",
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         console.log("New Releases Response:", response.data);
