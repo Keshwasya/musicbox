@@ -15,6 +15,7 @@ function Homepage({ user, onLogin, onLogout }) {
   const [currentRotation, setCurrentRotation] = useState([]);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const userId = localStorage.getItem('userId');
+  
 
   const openModal = (type) => setModalType(type);
   const closeModal = () => setModalType(null);
@@ -138,6 +139,31 @@ function Homepage({ user, onLogin, onLogout }) {
       console.error("Error fetching trending artists:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchNewReleases = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.spotify.com/v1/browse/new-releases",
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.REACT_APP_SPOTIFY_ACCESS_TOKEN}`,
+            },
+          }
+        );
+        console.log("New Releases Response:", response.data);
+        if (response.data && response.data.albums && response.data.albums.items) {
+          setTrendingAlbums(response.data.albums.items);
+        } else {
+          console.error("Unexpected response structure:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching new releases:", error);
+      }
+    };
+  
+    fetchNewReleases();
+  }, []);
 
   // Fetch Trending Albums from Popular Playlists
   const fetchTrendingAlbums = async () => {
@@ -321,6 +347,27 @@ function Homepage({ user, onLogin, onLogout }) {
               </div>
             </button>
           ))}
+        </div>
+
+        <div>
+          <h2>New Releases</h2>
+          <div className="album-list">
+            {trendingAlbums.length > 0 ? (
+              trendingAlbums.map((album) => (
+                <div key={album.id} className="album-item">
+                  <img
+                    src={album.images[0]?.url}
+                    alt={album.name}
+                    style={{ width: "150px", height: "150px" }}
+                  />
+                  <p>{album.name}</p>
+                  <p>{album.artists.map((artist) => artist.name).join(", ")}</p>
+                </div>
+              ))
+            ) : (
+              <p>Loading new releases...</p>
+            )}
+          </div>
         </div>
 
         <h2 className="mt-5">Trending Albums</h2>
