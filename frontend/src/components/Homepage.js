@@ -7,7 +7,7 @@ import axios from 'axios';
 function Homepage({ user, onLogin, onLogout }) {
   const [newAlbumReleases, setNewAlbumReleases] = useState([]);
   const [trendingArtists, setTrendingArtists] = useState([]);
-  const [trendingAlbums, setTrendingAlbums] = useState([]);
+  //const [trendingAlbums, setTrendingAlbums] = useState([]);
   const [recommendedAlbums, setRecommendedAlbums] = useState([]);
   const [modalType, setModalType] = useState(null); 
   const [selectedAlbum, setSelectedAlbum] = useState(null);
@@ -140,7 +140,7 @@ function Homepage({ user, onLogin, onLogout }) {
   };
 
   // Fetch Trending Albums from Popular Playlists
-  const fetchTrendingAlbums = async () => {
+  /*const fetchTrendingAlbums = async () => {
     const token = await getAccessToken();
     try {
       const response = await fetch(`https://api.spotify.com/v1/browse/featured-playlists?country=US&limit=5`, {
@@ -173,7 +173,7 @@ function Homepage({ user, onLogin, onLogout }) {
     } catch (error) {
       console.error("Error fetching trending albums:", error);
     }
-  };
+  };*/
 
   const fetchAlbumDetails = async (album) => {
       const token = await getAccessToken();
