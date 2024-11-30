@@ -323,7 +323,7 @@ function Homepage({ user, onLogin, onLogout }) {
           ))}
         </div>
 
-        <h2 className="mt-5">Trending Albums</h2>
+        {/*<h2 className="mt-5">Trending Albums</h2>
         <div className="scroll-container">
           {trendingAlbums.map(({ album, imageUrl }) => (
             <button
@@ -344,7 +344,7 @@ function Homepage({ user, onLogin, onLogout }) {
               </div>
             </button>
           ))}
-        </div>
+        </div>*/}
 
         <h2 className="mt-5">New Album Releases</h2>
         <div className="scroll-container">
