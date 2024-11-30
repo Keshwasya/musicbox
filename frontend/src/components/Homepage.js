@@ -263,7 +263,7 @@ function Homepage({ user, onLogin, onLogout }) {
   useEffect(() => {
     fetchNewAlbumReleases();
     fetchTrendingArtists();
-    fetchTrendingAlbums();
+    //fetchTrendingAlbums();
     fetchRandomRecommendations();
   }, [fetchRandomRecommendations]);
 
