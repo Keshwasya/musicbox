@@ -147,7 +147,7 @@ function Homepage({ user, onLogin, onLogout }) {
           "https://api.spotify.com/v1/browse/new-releases",
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${process.env.REACT_APP_SPOTIFY_ACCESS_TOKEN}`,
             },
           }
         );
