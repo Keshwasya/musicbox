@@ -140,7 +140,7 @@ function Homepage({ user, onLogin, onLogout }) {
     }
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchNewReleases = async () => {
       try {
         const response = await axios.get(
@@ -163,8 +163,9 @@ function Homepage({ user, onLogin, onLogout }) {
     };
   
     fetchNewReleases();
-  }, []);
+  }, []);*/
 
+  /*
   // Fetch Trending Albums from Popular Playlists
   const fetchTrendingAlbums = async () => {
     const token = await getAccessToken();
@@ -199,7 +200,7 @@ function Homepage({ user, onLogin, onLogout }) {
     } catch (error) {
       console.error("Error fetching trending albums:", error);
     }
-  };
+  };*/
 
   const fetchAlbumDetails = async (album) => {
       const token = await getAccessToken();
@@ -349,7 +350,7 @@ function Homepage({ user, onLogin, onLogout }) {
           ))}
         </div>
 
-        <div>
+        {/*<div>
           <h2>New Releases</h2>
           <div className="album-list">
             {trendingAlbums.length > 0 ? (
@@ -368,9 +369,9 @@ function Homepage({ user, onLogin, onLogout }) {
               <p>Loading new releases...</p>
             )}
           </div>
-        </div>
+        </div>*/}
 
-        <h2 className="mt-5">Trending Albums</h2>
+        {/*<h2 className="mt-5">Trending Albums</h2>
         <div className="scroll-container">
           {trendingAlbums.map(({ album, imageUrl }) => (
             <button
@@ -391,7 +392,7 @@ function Homepage({ user, onLogin, onLogout }) {
               </div>
             </button>
           ))}
-        </div>
+        </div>*/}
 
         <h2 className="mt-5">New Album Releases</h2>
         <div className="scroll-container">
