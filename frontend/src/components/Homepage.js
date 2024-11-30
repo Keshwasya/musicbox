@@ -291,9 +291,14 @@ function Homepage({ user, onLogin, onLogout }) {
             </a>
           </li>        
         </ul>
-        <h3>Test Login:</h3>
+        {/*<h3>Test Login:</h3>
         <p><strong>Email:</strong> test@test<br />
-        <strong>Password:</strong> test</p>
+        <strong>Password:</strong> test</p>*/}
+        <h3>Testing</h3>
+        <p>Feel free to register a account, you can use any fake email</p>
+        <p>You can search albums and artists to add to your current rotation or backlog to listen later </p>
+        <p>You can click on your profile, after logging in to see your profile page</p>
+        <p>leaving reviews route to be added</p>
       </div>
       
       <div className="container my-5">
